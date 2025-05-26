@@ -79,3 +79,4 @@ Desktop.ini
 # Publish directory
 publish/
 *.Publish.xml
+*.http
