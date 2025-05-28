@@ -1,6 +1,9 @@
 ﻿using GamedevQuest.Context;
+using GamedevQuest.Helpers;
 using GamedevQuest.Models;
+using GamedevQuest.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamedevQuest.Controllers
 {
@@ -9,39 +12,43 @@ namespace GamedevQuest.Controllers
     public class SignupController : ControllerBase
     {
         private readonly GameDevQuestDbContext _context;
-
-        public SignupController(GameDevQuestDbContext context)
+        private readonly IPasswordHelper _passwordHelper;
+        public SignupController(GameDevQuestDbContext context, IPasswordHelper passwordHelper)
         {
             _context = context;
+            _passwordHelper = passwordHelper;
         }
-
-        [HttpPost(Name = "signup")]
-        public async Task<ActionResult<User>> PostAsync([FromBody]SignupRequest request)
+        [HttpPost]
+        public async Task<ActionResult<User>> PostAsync([FromBody] SignupRequestDTO request)
         {
-            if(string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
-                return BadRequest("Make sure you fill all the necessary elements");
-            var userWithSameUsernameOrEmail = _context.Users.FirstOrDefault(user => user.Email.Equals(request.Email) || user.Username.Equals(request.Username));
-            if(userWithSameUsernameOrEmail!=default(User))
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userWithSameUsernameOrEmail = await _context.Users.FirstOrDefaultAsync
+                (user => user.Email.Equals(request.Email.ToLower()) || user.Username.Equals(request.Username.ToLower()));
+            if (userWithSameUsernameOrEmail != default(User))
                 return Conflict("A user already exists with the same username or email");
+
+            User newUser = CreateNewUser(request);
+
+            await _context.Users.AddAsync(newUser);
+            await _context.SaveChangesAsync();
+            return Ok(new SignupResponseDTO { Id = newUser.Id, Email = newUser.Email, Username = newUser.Username, FirstName = newUser.FirstName, LastName = newUser.LastName });
+        }
+        private User CreateNewUser(SignupRequestDTO request)
+        {
 
             var newUser = new User
             {
                 Email = request.Email,
                 Username = request.Username,
-                Password = request.Password,
+                Password = "",
                 FirstName = "",
                 LastName = ""
             };
-
-            await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
-            return Ok(newUser);
-        }
-        public class SignupRequest
-        {
-            public string? Email { get; set; }
-            public string? Username{ get; set; }
-            public string? Password { get; set; }
+            string hashedPassword = _passwordHelper.HashPassword(request.Password);
+            newUser.Password = hashedPassword;
+            return newUser;
         }
     }
 }
