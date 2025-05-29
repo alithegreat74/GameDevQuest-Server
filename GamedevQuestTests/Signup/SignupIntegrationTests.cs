@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Xunit;
 
-namespace GamedevQuestTests
+namespace GamedevQuestTests.Signup
 {
     public class SignupIntegrationTests
     {
