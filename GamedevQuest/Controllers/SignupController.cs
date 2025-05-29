@@ -19,7 +19,7 @@ namespace GamedevQuest.Controllers
             _passwordHelper = passwordHelper;
         }
         [HttpPost]
-        public async Task<ActionResult<User>> PostAsync([FromBody] SignupRequestDTO request)
+        public async Task<ActionResult<SignupResponseDTO>> PostAsync([FromBody] SignupRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -33,7 +33,16 @@ namespace GamedevQuest.Controllers
 
             await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
-            return Ok(new SignupResponseDTO { Id = newUser.Id, Email = newUser.Email, Username = newUser.Username, FirstName = newUser.FirstName, LastName = newUser.LastName });
+            return Ok(
+                new SignupResponseDTO
+                {
+                    Id = newUser.Id,
+                    Email = newUser.Email,
+                    Username = newUser.Username,
+                    FirstName = newUser.FirstName,
+                    LastName = newUser.LastName
+                }
+            );
         }
         private User CreateNewUser(SignupRequestDTO request)
         {
