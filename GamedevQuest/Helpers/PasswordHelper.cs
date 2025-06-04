@@ -5,43 +5,30 @@ namespace GamedevQuest.Helpers
 {
     public class PasswordHelper : IPasswordHelper
     {
-        
-        //TODO: use a better hashing algorithm for passwords (like PBKDF2)
-        //Used SHA256 to get an up and running hasher fast
+        private const int _saltSize = 16;        
+        private const int _keySize = 32;        
+        private const int _iterations = 600_000;        
         public string HashPassword(string password)
         {
-            try
-            {   
-                using (SHA256 hashAlgorithm = SHA256.Create())
-                {
-                    byte[] hashedPasswordBytes = hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(password));
-                    string hashedPassword = Encoding.ASCII.GetString(hashedPasswordBytes);
-                    return hashedPassword;
-                }
-                
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine($"There was a problem with hashing password ex: {e}");
-                return "";
-            }
+            byte[] salt = RandomNumberGenerator.GetBytes(_saltSize);
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, _iterations, HashAlgorithmName.SHA256);
+            byte[] key = pbkdf2.GetBytes(_keySize);
+            return $"{_iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(key)}";
         }
         public bool VerifyPassword(string hashedPassword, string password)
         {
-            try
-            {
-                using (SHA256 hashAlgorithm = SHA256.Create())
-                {
-                    byte[] hashedPasswordBytes = hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(password));
-                    string hashedComparePassword = Encoding.ASCII.GetString(hashedPasswordBytes);
-                    return hashedComparePassword == hashedPassword;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"There was a problem with the password verification : {e}");
-                return false;
-            }
+            var hashParts = hashedPassword.Split('.');
+            if (hashParts.Length != 3)
+                throw new FormatException("Wrong hash format");
+
+            int iterations = int.Parse(hashParts[0]);
+            byte[] salt = Convert.FromBase64String(hashParts[1]);
+            byte[] storedKey = Convert.FromBase64String(hashParts[2]);
+
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256);
+            byte[] key = pbkdf2.GetBytes(_keySize);
+
+            return CryptographicOperations.FixedTimeEquals(storedKey, key); 
         }
     }
 }
