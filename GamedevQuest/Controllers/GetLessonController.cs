@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GamedevQuest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class GetLessonController:ControllerBase
     {
         private readonly GameDevQuestDbContext _context;
@@ -17,7 +17,7 @@ namespace GamedevQuest.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Lesson>> GetAsync(int id)
         {
             Lesson find = await _context.Lessons.FirstOrDefaultAsync(lesson => lesson.Id == id);
