@@ -1,7 +1,9 @@
 ﻿using GamedevQuest.Context;
+using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamedevQuest.Controllers
 {
@@ -18,11 +20,8 @@ namespace GamedevQuest.Controllers
         [HttpGet]
         public async Task<ActionResult<LessonResponseDto>> Get()
         {
-            List<LessonResponseDto> responses = new List<LessonResponseDto>();
-            foreach (var lesson in _context.Lessons)
-            {
-                responses.Add(new LessonResponseDto(lesson));   
-            }
+            List<Lesson> lessons = _context.Lessons.AsNoTracking().ToList();
+            List<LessonResponseDto> responses = lessons.Select(lesson => new LessonResponseDto(lesson)).ToList();
             return Ok(responses);
         }
     }
