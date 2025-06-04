@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GamedevQuest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
         private readonly GameDevQuestDbContext _context;

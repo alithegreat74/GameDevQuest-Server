@@ -9,5 +9,6 @@ namespace GamedevQuest.Context
             : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Lesson> Lessons { get; set; }
     }
 }
