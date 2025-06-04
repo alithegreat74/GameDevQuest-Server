@@ -12,11 +12,13 @@ namespace GamedevQuest.Controllers
     {
         private readonly GameDevQuestDbContext _context;
         private readonly IPasswordHelper _passwordHelper;
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public LoginController(GameDevQuestDbContext context, IPasswordHelper passwordHelper)
+        public LoginController(GameDevQuestDbContext context, IPasswordHelper passwordHelper, JwtTokenGenerator jwtTokenGenerator)
         {
             _context = context;
             _passwordHelper = passwordHelper;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         [HttpPost]
@@ -29,10 +31,12 @@ namespace GamedevQuest.Controllers
             if (userMatch == null || !_passwordHelper.VerifyPassword(userMatch.Password, request.Password))
                 return Unauthorized("No User found");
 
+            string token = _jwtTokenGenerator.GenerateToken(request.Username);
             return Ok(
                 new LoginResponseDTO
                 {
                     Id = userMatch.Id,
+                    Token = token,
                     Username = userMatch.Username,
                     Email = userMatch.Email,
                     FirstName = userMatch.FirstName,

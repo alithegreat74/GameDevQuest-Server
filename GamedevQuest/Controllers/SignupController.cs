@@ -13,10 +13,12 @@ namespace GamedevQuest.Controllers
     {
         private readonly GameDevQuestDbContext _context;
         private readonly IPasswordHelper _passwordHelper;
-        public SignupController(GameDevQuestDbContext context, IPasswordHelper passwordHelper)
+        private readonly JwtTokenGenerator _jwtTokenGenerator;
+        public SignupController(GameDevQuestDbContext context, IPasswordHelper passwordHelper, JwtTokenGenerator jwtTokenGenerator)
         {
             _context = context;
             _passwordHelper = passwordHelper;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
         [HttpPost]
         public async Task<ActionResult<SignupResponseDTO>> PostAsync([FromBody] SignupRequestDTO request)
@@ -33,10 +35,12 @@ namespace GamedevQuest.Controllers
 
             await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
+            string token = _jwtTokenGenerator.GenerateToken(newUser.Username);
             return Ok(
                 new SignupResponseDTO
                 {
                     Id = newUser.Id,
+                    Token = token,
                     Email = newUser.Email,
                     Username = newUser.Username,
                     FirstName = newUser.FirstName,
