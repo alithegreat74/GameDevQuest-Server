@@ -24,7 +24,7 @@ namespace GamedevQuestTests.Signup
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new SignupController(dbContext, passwordHelper);
 
-            var request = new SignupRequestDTO
+            var request = new SignupRequestDto
             {
                 Email = "test@example.com",
                 Username = "testuser",
@@ -36,7 +36,7 @@ namespace GamedevQuestTests.Signup
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var signupResponse = Assert.IsType<SignupResponseDTO>(okResult.Value);
+            var signupResponse = Assert.IsType<SignupResponseDto>(okResult.Value);
             Assert.True(signupResponse.Username?.Equals(request.Username));
             Assert.True(signupResponse.Email?.Equals(request.Email));
             var userInDb = dbContext.Users.FirstOrDefault(u => u.Email == request.Email);
@@ -54,7 +54,7 @@ namespace GamedevQuestTests.Signup
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new SignupController(dbContext, passwordHelper);
 
-            var request = new SignupRequestDTO
+            var request = new SignupRequestDto
             {
                 Email = "",
                 Username = "testuser",
@@ -87,7 +87,7 @@ namespace GamedevQuestTests.Signup
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new SignupController(dbContext, passwordHelper);
 
-            var request = new SignupRequestDTO
+            var request = new SignupRequestDto
             {
                 Email = "test@example.com",
                 Username = "",
@@ -119,7 +119,7 @@ namespace GamedevQuestTests.Signup
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new SignupController(dbContext, passwordHelper);
 
-            var request = new SignupRequestDTO
+            var request = new SignupRequestDto
             {
                 Email = "test@example.com",
                 Username = "testuser",
@@ -151,7 +151,7 @@ namespace GamedevQuestTests.Signup
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new SignupController(dbContext, passwordHelper);
 
-            var request = new SignupRequestDTO
+            var request = new SignupRequestDto
             {
                 Email = "test@example.com",
                 Username = "testuser",

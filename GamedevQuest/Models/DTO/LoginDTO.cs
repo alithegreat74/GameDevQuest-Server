@@ -2,14 +2,14 @@
 
 namespace GamedevQuest.Models.DTO
 {
-    public class LoginRequestDTO
+    public class LoginRequestDto
     {
         [Required(ErrorMessage = "Username is required")]
         public string Username {  get; set; }
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
     }
-    public class LoginResponseDTO
+    public class LoginResponseDto
     {
         public int Id { get; set; }
         public string Token { get; set; }
