@@ -25,7 +25,7 @@ namespace GamedevQuestTests.Login
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new LoginController(dbContext, passwordHelper);
 
-            var request = new LoginRequestDTO
+            var request = new LoginRequestDto
             {
                 Username = "username",
                 Password = "password",
@@ -47,7 +47,7 @@ namespace GamedevQuestTests.Login
 
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var loginResponse = Assert.IsType<LoginResponseDTO>(okResult.Value);
+            var loginResponse = Assert.IsType<LoginResponseDto>(okResult.Value);
             Assert.True(loginResponse.Username?.Equals(request.Username));
         }
 
@@ -64,7 +64,7 @@ namespace GamedevQuestTests.Login
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new LoginController(dbContext, passwordHelper);
 
-            var request = new LoginRequestDTO
+            var request = new LoginRequestDto
             {
                 Username = "username",
                 Password = "password",
@@ -87,7 +87,7 @@ namespace GamedevQuestTests.Login
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new LoginController(dbContext, passwordHelper);
 
-            var request = new LoginRequestDTO
+            var request = new LoginRequestDto
             {
                 Username = "",
                 Password = "password",
@@ -119,7 +119,7 @@ namespace GamedevQuestTests.Login
             using var dbContext = new GameDevQuestDbContext(options);
             var sut = new LoginController(dbContext, passwordHelper);
 
-            var request = new LoginRequestDTO
+            var request = new LoginRequestDto
             {
                 Username = "username",
                 Password = "",

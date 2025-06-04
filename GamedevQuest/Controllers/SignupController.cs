@@ -21,7 +21,7 @@ namespace GamedevQuest.Controllers
             _jwtTokenGenerator = jwtTokenGenerator;
         }
         [HttpPost]
-        public async Task<ActionResult<SignupResponseDTO>> PostAsync([FromBody] SignupRequestDTO request)
+        public async Task<ActionResult<SignupResponseDto>> PostAsync([FromBody] SignupRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -37,7 +37,7 @@ namespace GamedevQuest.Controllers
             await _context.SaveChangesAsync();
             string token = _jwtTokenGenerator.GenerateToken(newUser.Username);
             return Ok(
-                new SignupResponseDTO
+                new SignupResponseDto
                 {
                     Id = newUser.Id,
                     Token = token,
@@ -48,7 +48,7 @@ namespace GamedevQuest.Controllers
                 }
             );
         }
-        private User CreateNewUser(SignupRequestDTO request)
+        private User CreateNewUser(SignupRequestDto request)
         {
 
             var newUser = new User

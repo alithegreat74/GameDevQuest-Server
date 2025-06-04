@@ -2,7 +2,7 @@
 
 namespace GamedevQuest.Models.DTO
 {
-    public class SignupRequestDTO
+    public class SignupRequestDto
     {
         [EmailAddress(ErrorMessage = "Invalid Email format")]
         [Required(ErrorMessage = "Email Address is required")]
@@ -12,7 +12,7 @@ namespace GamedevQuest.Models.DTO
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
     }
-    public class SignupResponseDTO
+    public class SignupResponseDto
     {
         public int Id { get; set; }
         public string Token { get; set; }

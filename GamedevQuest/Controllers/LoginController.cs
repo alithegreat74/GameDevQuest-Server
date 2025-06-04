@@ -22,7 +22,7 @@ namespace GamedevQuest.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<LoginResponseDTO>> PostAsync([FromBody] LoginRequestDTO request)
+        public async Task<ActionResult<LoginResponseDto>> PostAsync([FromBody] LoginRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -33,7 +33,7 @@ namespace GamedevQuest.Controllers
 
             string token = _jwtTokenGenerator.GenerateToken(request.Username);
             return Ok(
-                new LoginResponseDTO
+                new LoginResponseDto
                 {
                     Id = userMatch.Id,
                     Token = token,
