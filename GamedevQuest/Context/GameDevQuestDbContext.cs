@@ -10,5 +10,6 @@ namespace GamedevQuest.Context
 
         public DbSet<User> Users { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
+        public DbSet<Test> Tests { get; set; }
     }
 }
