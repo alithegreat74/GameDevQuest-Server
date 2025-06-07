@@ -5,15 +5,12 @@ COPY ["GamedevQuest/GamedevQuest.csproj", "GamedevQuest/"]
 RUN dotnet restore "./GamedevQuest/GamedevQuest.csproj"
 COPY . .
 WORKDIR "/src/GamedevQuest"
-RUN dotnet build "./GamedevQuest.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
+RUN dotnet build "GamedevQuest.csproj" -c $BUILD_CONFIGURATION -o /app/build
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./GamedevQuest.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-FROM base AS final
+RUN dotnet publish "GamedevQuest.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "GamedevQuest.dll"]
