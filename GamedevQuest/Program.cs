@@ -5,10 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-var port = 8080;
-builder.WebHost.UseUrls($"https://*:{port}");
+
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddHealthChecks();
 
 string? DefaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<GameDevQuestDbContext>(options =>
@@ -38,8 +41,6 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseHealthChecks("/health");
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
