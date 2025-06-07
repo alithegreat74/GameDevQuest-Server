@@ -1,0 +1,8 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "./GamedevQuest/Dockerfile"
+
+[deploy]
+startCommand = "dotnet GamedevQuest.dll"
+restartPolicyType = "always"
+healthcheckPath = "/health"
