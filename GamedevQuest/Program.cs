@@ -5,7 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var port = 8080;
+builder.WebHost.UseUrls($"https://*:{port}");
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -35,6 +36,8 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseHealthChecks("/health");
 
 app.UseHttpsRedirection();
 
