@@ -1,10 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["GamedevQuest/GamedevQuest.csproj", "GamedevQuest/"]
-RUN dotnet restore "./GamedevQuest/GamedevQuest.csproj"
+WORKDIR /app
 COPY . .
-WORKDIR "/src/GamedevQuest"
+RUN dotnet restore "./GamedevQuest.csproj"
 RUN dotnet build "GamedevQuest.csproj" -c $BUILD_CONFIGURATION -o /app/build
 FROM build AS publish
 RUN dotnet publish "GamedevQuest.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
