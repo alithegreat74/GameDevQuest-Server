@@ -6,14 +6,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:8080");
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddHealthChecks();
-
-string? DefaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+string? DefaultConnectionString = new ConnectionHelper().GenerateConnectionString();
 builder.Services.AddDbContext<GameDevQuestDbContext>(options =>
     options.UseNpgsql(DefaultConnectionString));
 
