@@ -57,7 +57,9 @@ namespace GamedevQuest.Controllers
                 Username = request.Username,
                 Password = "",
                 FirstName = "",
-                LastName = ""
+                LastName = "",
+                Xp = 0,
+                Level = 1
             };
             string hashedPassword = _passwordHelper.HashPassword(request.Password);
             newUser.Password = hashedPassword;

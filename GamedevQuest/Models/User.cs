@@ -1,4 +1,6 @@
-﻿namespace GamedevQuest.Models
+﻿using GamedevQuest.Helpers;
+
+namespace GamedevQuest.Models
 {
     public class User
     {
@@ -9,5 +11,7 @@
         public string Username { get; set; }
         public string Password { get; set; }
         public int Level { get; set; }
+        public int Xp { get; set; }
+        public int LevelXp => XpSystem.GetLevelXp(Level);
     }
 }
