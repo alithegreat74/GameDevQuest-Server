@@ -1,6 +1,8 @@
 ﻿using GamedevQuest.Context;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
+using GamedevQuest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +21,10 @@ namespace GamedevQuest.Controllers
         [Authorize]
         [HttpGet]
         public ActionResult<List<LessonResponseDto>> Get()
-
         {
-            List<Lesson> lessons = _context.Lessons.AsNoTracking().ToList();
-            List<LessonResponseDto> responses = lessons.Select(lesson => new LessonResponseDto(lesson)).ToList();
+            var lessonRepository = new LessonRepository(_context.Lessons);
+            var lessonService = new LessonService(lessonRepository);
+            List<LessonResponseDto> responses = lessonService.GetAllLessons();
             return Ok(responses);
         }
     }

@@ -1,10 +1,11 @@
 ﻿using GamedevQuest.Context;
+using GamedevQuest.Helpers.DatabaseHelpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
+using GamedevQuest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace GamedevQuest.Controllers
 {
@@ -22,13 +23,17 @@ namespace GamedevQuest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LessonDetailResponseDto>> GetAsync(int id)
         {
-            Lesson find = await _context.Lessons.AsNoTracking().FirstOrDefaultAsync(lesson => lesson.Id == id);
-            if (find == null)
-                return NotFound("No lesson found with this id");
-            int relatedTestSize = find.RelatedTests.Count;
-            int randomTest = RandomNumberGenerator.GetInt32(1,relatedTestSize+1);
-            Test findTest = await _context.Tests.AsNoTracking().FirstOrDefaultAsync(test => test.Id == randomTest);
-            var response = new LessonDetailResponseDto(find, findTest);
+            var lessonRepository = new LessonRepository(_context.Lessons);
+            var testRepository = new TestRepository(_context.Tests);
+            var testService = new TestService(testRepository);
+            var lessonService = new LessonService(lessonRepository);
+            (Lesson? lesson, string errorMessage) = await lessonService.GetLesson(id);
+            if (lesson == null)
+                return BadRequest(errorMessage);
+            (Test? test, errorMessage) = await testService.FindTestForLesson(lesson);
+            if(test == null)
+                return BadRequest(errorMessage);
+            var response = new LessonDetailResponseDto(lesson, test);
             return Ok(response);
         }
     }

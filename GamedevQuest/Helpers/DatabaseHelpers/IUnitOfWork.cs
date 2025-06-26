@@ -4,6 +4,6 @@
     {
         public Task StartTransaction();
         public Task CommitChanges();
-        public void RollBackChanges();
+        public Task RollBackChanges();
     }
 }

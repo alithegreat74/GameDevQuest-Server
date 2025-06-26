@@ -3,6 +3,7 @@ using GamedevQuest.Helpers;
 using GamedevQuest.Helpers.DatabaseHelpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
 using GamedevQuest.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,8 +28,8 @@ namespace GamedevQuest.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var unitOfWork = new UserUnitOfWork(_context);
-            var userService = new UserLoginService(unitOfWork.GetRepository());
+            var userRepository = new UserRepository(_context.Users);
+            var userService = new UserLoginService(userRepository);
             (User? user, string errorMessage) = await userService.ValidateUserLogin(request);
             if (user==null)
                 return Unauthorized(errorMessage);

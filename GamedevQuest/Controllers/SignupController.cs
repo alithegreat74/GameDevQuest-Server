@@ -25,9 +25,10 @@ namespace GamedevQuest.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var unitOfWork = new UserUnitOfWork(_context);
+            var unitOfWork = new UnitOfWork(_context);
             await unitOfWork.StartTransaction();
-            var userService= new UserSignupService(unitOfWork.GetRepository());
+            var userRepository = new UserRepository(_context.Users);
+            var userService= new UserSignupService(userRepository);
             (bool canCreateUser, string errorMessage) = await userService.CanCreateUser(request);
             if(!canCreateUser)
                 return BadRequest(errorMessage);
