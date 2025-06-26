@@ -18,7 +18,7 @@ namespace GamedevQuest.Controllers
         }
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<LessonResponseDto>>> Get()
+        public ActionResult<List<LessonResponseDto>> Get()
 
         {
             List<Lesson> lessons = _context.Lessons.AsNoTracking().ToList();

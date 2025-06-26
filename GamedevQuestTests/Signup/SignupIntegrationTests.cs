@@ -3,6 +3,7 @@ using GamedevQuest.Controllers;
 using GamedevQuest.Helpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuestTests.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
@@ -14,65 +15,49 @@ namespace GamedevQuestTests.Signup
     {
         [Fact]
         [Trait("Category", "Integration")]
-        public async Task Signup_FullData_Success()
+        public async Task SignupController_FullData_Success()
         {
-            // Arrange
-            var passwordHelper = new PasswordHelper();
-            var options = new DbContextOptionsBuilder<GameDevQuestDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            using var dbContext = new GameDevQuestDbContext(options);
-            var sut = new SignupController(dbContext, passwordHelper);
-
+            //Arrange
+            GameDevQuestDbContext context = Utility.GetContext();
+            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            var sut = new SignupController(context, jwtTokenHelper);
+            await RemoveAllUsers(context);
             var request = new SignupRequestDto
             {
                 Email = "test@example.com",
                 Username = "testuser",
                 Password = "password123"
             };
-
-            // Act
-            var result = await sut.PostAsync(request);
+            //Act
+            var response = await sut.PostAsync(request);
 
             //Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = Assert.IsType<OkObjectResult>(response.Result);
             var signupResponse = Assert.IsType<SignupResponseDto>(okResult.Value);
             Assert.True(signupResponse.Username?.Equals(request.Username));
             Assert.True(signupResponse.Email?.Equals(request.Email));
-            var userInDb = dbContext.Users.FirstOrDefault(u => u.Email == request.Email);
+            var userInDb = context.Users.FirstOrDefault(u => u.Email == request.Email);
             Assert.NotNull(userInDb);
         }
-        [Fact]
-        [Trait("Category", "Integration")]
-        public async Task Signup_NoEmail_Fail()
+        public async Task SignupController_NoEmail_Fail()
         {
             //Arrange
-            var passwordHelper = new PasswordHelper();
-            var options = new DbContextOptionsBuilder<GameDevQuestDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            using var dbContext = new GameDevQuestDbContext(options);
-            var sut = new SignupController(dbContext, passwordHelper);
-
+            GameDevQuestDbContext context = Utility.GetContext();
+            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            await RemoveAllUsers(context);
+            var sut = new SignupController(context, jwtTokenHelper);
             var request = new SignupRequestDto
             {
                 Email = "",
                 Username = "testuser",
                 Password = "password123"
             };
-            var validationContext = new ValidationContext(request);
-            var validationResults = new List<ValidationResult>();
-            Validator.TryValidateObject(request, validationContext, validationResults, validateAllProperties: true);
-            foreach (var validationResult in validationResults)
-            {
-                sut.ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
-            }
-            // Act
-            var result = await sut.PostAsync(request);
-
+            SetupModelValidation(sut, request);
+            //Act
+            ActionResult<SignupResponseDto> result = await sut.PostAsync(request);
             //Assert
             Assert.False(result.Result is OkObjectResult);
-            Assert.Null(dbContext.Users.FirstOrDefault(u => u.Username == request.Username));
+            Assert.Null(context.Users.FirstOrDefault(u => u.Username == request.Username));
         }
 
         [Fact]
@@ -80,51 +65,79 @@ namespace GamedevQuestTests.Signup
         public async Task Signup_NoUsername_Fail()
         {
             //Arrange
-            var passwordHelper = new PasswordHelper();
-            var options = new DbContextOptionsBuilder<GameDevQuestDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            using var dbContext = new GameDevQuestDbContext(options);
-            var sut = new SignupController(dbContext, passwordHelper);
-
+            GameDevQuestDbContext context = Utility.GetContext();
+            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            await RemoveAllUsers(context);
+            var sut = new SignupController(context, jwtTokenHelper);
             var request = new SignupRequestDto
             {
                 Email = "test@example.com",
                 Username = "",
                 Password = "password123"
             };
-            var validationContext = new ValidationContext(request);
-            var validationResults = new List<ValidationResult>();
-            Validator.TryValidateObject(request, validationContext, validationResults, validateAllProperties: true);
-            foreach (var validationResult in validationResults)
-            {
-                sut.ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
-            }
-            // Act
-            var result = await sut.PostAsync(request);
-
+            SetupModelValidation(sut, request);
+            //Act
+            ActionResult<SignupResponseDto> result = await sut.PostAsync(request);
             //Assert
             Assert.False(result.Result is OkObjectResult);
-            Assert.Null(dbContext.Users.FirstOrDefault(u => u.Email == request.Email));
+            Assert.Null(context.Users.FirstOrDefault(u => u.Email == request.Email));
         }
         [Fact]
         [Trait("Category", "Integration")]
         public async Task Signup_NoPassword_Fail()
         {
             //Arrange
-            var passwordHelper = new PasswordHelper();
-            var options = new DbContextOptionsBuilder<GameDevQuestDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            using var dbContext = new GameDevQuestDbContext(options);
-            var sut = new SignupController(dbContext, passwordHelper);
-
+            GameDevQuestDbContext context = Utility.GetContext();
+            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            await RemoveAllUsers(context);
+            var sut = new SignupController(context, jwtTokenHelper);
             var request = new SignupRequestDto
             {
                 Email = "test@example.com",
                 Username = "testuser",
                 Password = ""
             };
+            SetupModelValidation(sut, request);
+            //Act
+            ActionResult<SignupResponseDto> result = await sut.PostAsync(request);
+            //Assert
+            Assert.False(result.Result is OkObjectResult);
+            Assert.Null(context.Users.FirstOrDefault(u => u.Username == request.Username));
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public async Task Signup_DuplicateUser_Fail()
+        {
+            //Arrange
+            var request = new SignupRequestDto
+            {
+                Email = "test@example.com",
+                Username = "testuser",
+                Password = "password123"
+            };
+            var oldUser = new User()
+            {
+                Email = request.Email,
+                Username = request.Username,
+                Password = request.Password,
+                FirstName = "",
+                LastName = "",
+                Level = 0
+            };
+            GameDevQuestDbContext context = Utility.GetContext();
+            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            var sut = new SignupController(context, jwtTokenHelper);
+            await context.Users.AddAsync(oldUser);
+            await context.SaveChangesAsync();
+            //Act
+            var response = await sut.PostAsync(request);
+
+            //Assert
+            Assert.False(response.Result is OkObjectResult);
+        }
+        private void SetupModelValidation(SignupController sut, SignupRequestDto request)
+        {
             var validationContext = new ValidationContext(request);
             var validationResults = new List<ValidationResult>();
             Validator.TryValidateObject(request, validationContext, validationResults, validateAllProperties: true);
@@ -132,40 +145,12 @@ namespace GamedevQuestTests.Signup
             {
                 sut.ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
             }
-            // Act
-            var result = await sut.PostAsync(request);
-
-            //Assert
-            Assert.False(result.Result is OkObjectResult);
-            Assert.Null(dbContext.Users.FirstOrDefault(u => u.Email == request.Email));
         }
-        [Fact]
-        [Trait("Category", "Integration")]
-        public async Task Signup_DuplicateUser_Fail()
+        private async Task RemoveAllUsers(GameDevQuestDbContext context)
         {
-            // Arrange
-            var passwordHelper = new PasswordHelper();
-            var options = new DbContextOptionsBuilder<GameDevQuestDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            using var dbContext = new GameDevQuestDbContext(options);
-            var sut = new SignupController(dbContext, passwordHelper);
-
-            var request = new SignupRequestDto
-            {
-                Email = "test@example.com",
-                Username = "testuser",
-                Password = "password123"
-            };
-
-            dbContext.Add(new User { Email = request.Email, Username = request.Username, FirstName = "", LastName = "", Password = "" });
-            await dbContext.SaveChangesAsync();
-
-            // Act
-            var result = await sut.PostAsync(request);
-
-            // Assert
-            Assert.False(result.Result is OkObjectResult);
+            var allUsers = await context.Users.ToListAsync();
+            context.Users.RemoveRange(allUsers);
+            await context.SaveChangesAsync();
         }
     }
 }

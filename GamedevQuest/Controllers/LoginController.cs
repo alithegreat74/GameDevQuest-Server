@@ -11,10 +11,10 @@ namespace GamedevQuest.Controllers
     public class LoginController : ControllerBase
     {
         private readonly GameDevQuestDbContext _context;
-        private readonly IPasswordHelper _passwordHelper;
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly PasswordHelper _passwordHelper;
+        private readonly JwtTokenHelper _jwtTokenGenerator;
 
-        public LoginController(GameDevQuestDbContext context, IPasswordHelper passwordHelper, JwtTokenGenerator jwtTokenGenerator)
+        public LoginController(GameDevQuestDbContext context, PasswordHelper passwordHelper, JwtTokenHelper jwtTokenGenerator)
         {
             _context = context;
             _passwordHelper = passwordHelper;
