@@ -14,7 +14,12 @@ namespace GamedevQuest.Repositories
         public async Task<User?> FindUser(string username, string email) 
         {
             return await _context.Users.FirstOrDefaultAsync
-                (user => user.Email.Equals(email.ToLower()) || user.Username.Equals(username.ToLower()));
+                (user => user.Email.ToLower().Equals(email.ToLower()) || user.Username.ToLower().Equals(username.ToLower()));
+        }
+        public async Task<User?> FindUser(string username)
+        {
+            return await _context.Users.FirstOrDefaultAsync
+                (user => user.Username.ToLower().Equals(username.ToLower()));
         }
         public async Task AddUser(User user)
         {

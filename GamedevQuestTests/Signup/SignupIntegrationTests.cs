@@ -11,6 +11,7 @@ using Xunit;
 
 namespace GamedevQuestTests.Signup
 {
+    [Collection("IntegrationTests")]
     public class SignupIntegrationTests
     {
         [Fact]
