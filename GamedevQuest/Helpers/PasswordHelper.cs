@@ -3,7 +3,7 @@ using System.Text;
 
 namespace GamedevQuest.Helpers
 {
-    public class PasswordHelper : IPasswordHelper
+    public class PasswordHelper
     {
         private const int _saltSize = 16;        
         private const int _keySize = 32;        

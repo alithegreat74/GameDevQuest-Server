@@ -17,5 +17,14 @@ namespace GamedevQuest.Models.DTO
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public LoginResponseDto(User user, string token)
+        {
+            Id = user.Id;
+            Username = user.Username;
+            Email = user.Email;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            Token = token;
+        }
     }
 }

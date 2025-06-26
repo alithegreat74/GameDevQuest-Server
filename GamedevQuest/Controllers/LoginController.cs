@@ -1,6 +1,10 @@
 ﻿using GamedevQuest.Context;
 using GamedevQuest.Helpers;
+using GamedevQuest.Helpers.DatabaseHelpers;
+using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
+using GamedevQuest.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,15 +14,12 @@ namespace GamedevQuest.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly GameDevQuestDbContext _context;
-        private readonly IPasswordHelper _passwordHelper;
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
-
-        public LoginController(GameDevQuestDbContext context, IPasswordHelper passwordHelper, JwtTokenGenerator jwtTokenGenerator)
+        private readonly JwtTokenHelper _jwtTokenGenerator;
+        private readonly UserLoginService _userLoginService;
+        public LoginController(JwtTokenHelper jwtTokenGenerator, UserLoginService userLoginService)
         {
-            _context = context;
-            _passwordHelper = passwordHelper;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _userLoginService = userLoginService;
         }
 
         [HttpPost]
@@ -26,24 +27,11 @@ namespace GamedevQuest.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            var userMatch = await _context.Users.FirstOrDefaultAsync(user => user.Username.ToLower().Equals(request.Username.ToLower()));
-            if (userMatch == null || !_passwordHelper.VerifyPassword(userMatch.Password, request.Password))
-                return Unauthorized("No User found");
-
+            (User? user, string errorMessage) = await _userLoginService.ValidateUserLogin(request);
+            if (user==null)
+                return Unauthorized(errorMessage);
             string token = _jwtTokenGenerator.GenerateToken(request.Username);
-            return Ok(
-                new LoginResponseDto
-                {
-                    Id = userMatch.Id,
-                    Token = token,
-                    Username = userMatch.Username,
-                    Email = userMatch.Email,
-                    FirstName = userMatch.FirstName,
-                    LastName = userMatch.LastName,
-                }
-            );
-
+            return Ok(new LoginResponseDto(user, token));
         }
     }
 }
