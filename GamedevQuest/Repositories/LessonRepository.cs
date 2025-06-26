@@ -7,9 +7,9 @@ namespace GamedevQuest.Repositories
     public class LessonRepository
     {
         private readonly DbSet<Lesson> _set;
-        public LessonRepository(DbSet<Lesson> set)
+        public LessonRepository(GameDevQuestDbContext context)
         {
-            _set = set;
+            _set = context.Lessons;
         }
         public async Task<Lesson?> GetLesson(int id)
         {

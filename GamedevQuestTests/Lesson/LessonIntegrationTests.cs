@@ -2,6 +2,8 @@
 using GamedevQuest.Controllers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
+using GamedevQuest.Services;
 using GamedevQuestTests.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +22,7 @@ namespace GamedevQuestTests.Lesson
             GameDevQuestDbContext context = Utility.GetContext();
             await RemoveAllLessonsAndTests(context);
             await CreateDummyLessonAndTest(context);
-            var sut = new GetLessonController(context);
+            var sut = CreateSystemUnderTest(context);
             //Act
             ActionResult<LessonDetailResponseDto> response = await sut.GetAsync(1);
             //Assert
@@ -35,7 +37,7 @@ namespace GamedevQuestTests.Lesson
             //Arrange
             GameDevQuestDbContext context = Utility.GetContext();
             await RemoveAllLessonsAndTests(context);
-            var sut = new GetLessonController(context);
+            var sut = CreateSystemUnderTest(context);
             //Act
             ActionResult<LessonDetailResponseDto> response = await sut.GetAsync(1);
             //Assert
@@ -71,6 +73,14 @@ namespace GamedevQuestTests.Lesson
             context.Tests.RemoveRange(allTests);
 
             await context.SaveChangesAsync();
+        }
+        private GetLessonController CreateSystemUnderTest(GameDevQuestDbContext context)
+        {
+            var lessonRepository = new LessonRepository(context);
+            var testRepository = new TestRepository(context);
+            var lessonService = new LessonService(lessonRepository);
+            var testService = new TestService(testRepository);
+            return new GetLessonController(lessonService, testService);
         }
     }
 }

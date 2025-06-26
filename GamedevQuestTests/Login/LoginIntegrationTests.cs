@@ -3,10 +3,13 @@ using GamedevQuest.Controllers;
 using GamedevQuest.Helpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
+using GamedevQuest.Services;
 using GamedevQuestTests.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace GamedevQuestTests.Login
@@ -25,12 +28,7 @@ namespace GamedevQuestTests.Login
                 Password = "password",
             };
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
-            await RemoveAllUsers(context);
-            User dummyUser = CreateDummyUser(request.Username, request.Password);
-            await context.Users.AddAsync(dummyUser);
-            await context.SaveChangesAsync();
-            var sut = new LoginController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
 
             //Act
             ActionResult<LoginResponseDto> response =  await sut.PostAsync(request);
@@ -51,8 +49,7 @@ namespace GamedevQuestTests.Login
                 Password = "password",
             };
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
-            var sut = new LoginController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
             SetupModelValidation(sut, request);
 
             //Act
@@ -72,8 +69,7 @@ namespace GamedevQuestTests.Login
                 Password = "",
             };
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
-            var sut = new LoginController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
             SetupModelValidation(sut, request);
 
             //Act
@@ -93,12 +89,11 @@ namespace GamedevQuestTests.Login
                 Password = "wrongPassword",
             };
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            var sut = CreateSystemUnderTest(context);
             await RemoveAllUsers(context);
             User dummyUser = CreateDummyUser(request.Username, "password");
             await context.Users.AddAsync(dummyUser);
             await context.SaveChangesAsync();
-            var sut = new LoginController(context, jwtTokenHelper);
 
             //Act
             ActionResult<LoginResponseDto> response = await sut.PostAsync(request);
@@ -117,12 +112,11 @@ namespace GamedevQuestTests.Login
                 Password = "password",
             };
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            var sut = CreateSystemUnderTest(context);
             await RemoveAllUsers(context);
             User dummyUser = CreateDummyUser("username", request.Password);
             await context.Users.AddAsync(dummyUser);
             await context.SaveChangesAsync();
-            var sut = new LoginController(context, jwtTokenHelper);
 
             //Act
             ActionResult<LoginResponseDto> response = await sut.PostAsync(request);
@@ -159,6 +153,14 @@ namespace GamedevQuestTests.Login
                 LastName = "",
                 Level = 0
             };
+        }
+        private LoginController CreateSystemUnderTest(GameDevQuestDbContext context)
+        {
+            var passwordHelper = new PasswordHelper();
+            var userRepository = new UserRepository(context);
+            var userLoginService = new UserLoginService(userRepository, passwordHelper);
+            var jwtTokenHelper = Utility.GetJwtTokenHelper();
+            return new LoginController(jwtTokenHelper, userLoginService);
         }
     }
 }

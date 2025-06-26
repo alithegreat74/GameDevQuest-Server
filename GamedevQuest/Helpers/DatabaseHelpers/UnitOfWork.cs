@@ -26,7 +26,7 @@ namespace GamedevQuest.Helpers.DatabaseHelpers
             }
             catch
             {
-                RollBackChanges();
+                await RollBackChanges();
             }
         }
 

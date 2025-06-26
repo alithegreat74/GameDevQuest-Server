@@ -1,7 +1,6 @@
 ﻿using GamedevQuest.Models;
 using GamedevQuest.Repositories;
 using System.Security.Cryptography;
-using Xunit.Sdk;
 
 namespace GamedevQuest.Services
 {
@@ -22,9 +21,12 @@ namespace GamedevQuest.Services
         }
         public async Task<(Test? test, string errorMessage)> FindTestForLesson(Lesson lesson)
         {
+            if (lesson.RelatedTests == null || lesson.RelatedTests.Count == 0)
+                return (null, "No tests available for this lesson");
+
             int relatedTestSize = lesson.RelatedTests.Count;
-            int randomTest = RandomNumberGenerator.GetInt32(1, relatedTestSize + 1);
-            return await GetTest(randomTest);
+            int randomTest = RandomNumberGenerator.GetInt32(0, relatedTestSize);
+            return await GetTest(lesson.RelatedTests[randomTest]);
         }
     }
 }

@@ -14,13 +14,12 @@ namespace GamedevQuest.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly GameDevQuestDbContext _context;
         private readonly JwtTokenHelper _jwtTokenGenerator;
-
-        public LoginController(GameDevQuestDbContext context, JwtTokenHelper jwtTokenGenerator)
+        private readonly UserLoginService _userLoginService;
+        public LoginController(JwtTokenHelper jwtTokenGenerator, UserLoginService userLoginService)
         {
-            _context = context;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _userLoginService = userLoginService;
         }
 
         [HttpPost]
@@ -28,9 +27,7 @@ namespace GamedevQuest.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var userRepository = new UserRepository(_context.Users);
-            var userService = new UserLoginService(userRepository);
-            (User? user, string errorMessage) = await userService.ValidateUserLogin(request);
+            (User? user, string errorMessage) = await _userLoginService.ValidateUserLogin(request);
             if (user==null)
                 return Unauthorized(errorMessage);
             string token = _jwtTokenGenerator.GenerateToken(request.Username);

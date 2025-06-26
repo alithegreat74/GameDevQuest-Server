@@ -2,7 +2,6 @@
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace GamedevQuest.Services
 {
@@ -10,10 +9,11 @@ namespace GamedevQuest.Services
     {
         private readonly PasswordHelper _passwordHelper;
         private readonly UserRepository _repository;
-        public UserLoginService(UserRepository repository)
+        public UserLoginService(UserRepository repository, PasswordHelper passwordHelper)
         {
             _passwordHelper = new PasswordHelper();
             _repository = repository;
+            _passwordHelper = passwordHelper;
         }
         public async Task<(User? user, string errorMessage)> ValidateUserLogin(LoginRequestDto request)
         {

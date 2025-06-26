@@ -11,20 +11,20 @@ namespace GamedevQuest.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GetAllLessonsController:ControllerBase
+    public class GetAllLessonsController : ControllerBase
     {
-        private readonly GameDevQuestDbContext _context;
-        public GetAllLessonsController(GameDevQuestDbContext context)
+        private readonly LessonService _lessonService;
+
+        public GetAllLessonsController(LessonService lessonService)
         {
-            _context = context;
+            _lessonService = lessonService;
         }
+
         [Authorize]
         [HttpGet]
         public ActionResult<List<LessonResponseDto>> Get()
         {
-            var lessonRepository = new LessonRepository(_context.Lessons);
-            var lessonService = new LessonService(lessonRepository);
-            List<LessonResponseDto> responses = lessonService.GetAllLessons();
+            List<LessonResponseDto> responses = _lessonService.GetAllLessons();
             return Ok(responses);
         }
     }

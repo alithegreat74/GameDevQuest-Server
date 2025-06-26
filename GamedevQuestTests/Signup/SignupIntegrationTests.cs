@@ -1,8 +1,11 @@
 using GamedevQuest.Context;
 using GamedevQuest.Controllers;
 using GamedevQuest.Helpers;
+using GamedevQuest.Helpers.DatabaseHelpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
+using GamedevQuest.Services;
 using GamedevQuestTests.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +23,8 @@ namespace GamedevQuestTests.Signup
         {
             //Arrange
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
-            var sut = new SignupController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
+           
             await RemoveAllUsers(context);
             var request = new SignupRequestDto
             {
@@ -40,13 +43,13 @@ namespace GamedevQuestTests.Signup
             var userInDb = context.Users.FirstOrDefault(u => u.Email == request.Email);
             Assert.NotNull(userInDb);
         }
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task SignupController_NoEmail_Fail()
         {
             //Arrange
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
-            await RemoveAllUsers(context);
-            var sut = new SignupController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
             var request = new SignupRequestDto
             {
                 Email = "",
@@ -67,9 +70,8 @@ namespace GamedevQuestTests.Signup
         {
             //Arrange
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
             await RemoveAllUsers(context);
-            var sut = new SignupController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
             var request = new SignupRequestDto
             {
                 Email = "test@example.com",
@@ -89,9 +91,8 @@ namespace GamedevQuestTests.Signup
         {
             //Arrange
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
             await RemoveAllUsers(context);
-            var sut = new SignupController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
             var request = new SignupRequestDto
             {
                 Email = "test@example.com",
@@ -117,18 +118,18 @@ namespace GamedevQuestTests.Signup
                 Username = "testuser",
                 Password = "password123"
             };
+            var passwordHelper = new PasswordHelper();
             var oldUser = new User()
             {
                 Email = request.Email,
                 Username = request.Username,
-                Password = request.Password,
+                Password = passwordHelper.HashPassword(request.Password),
                 FirstName = "",
                 LastName = "",
                 Level = 0
             };
             GameDevQuestDbContext context = Utility.GetContext();
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
-            var sut = new SignupController(context, jwtTokenHelper);
+            var sut = CreateSystemUnderTest(context);
             await context.Users.AddAsync(oldUser);
             await context.SaveChangesAsync();
             //Act
@@ -152,6 +153,15 @@ namespace GamedevQuestTests.Signup
             var allUsers = await context.Users.ToListAsync();
             context.Users.RemoveRange(allUsers);
             await context.SaveChangesAsync();
+        }
+        private SignupController CreateSystemUnderTest(GameDevQuestDbContext context)
+        {
+            var unitOfWork = new UnitOfWork(context);
+            var userRepository = new UserRepository(context);
+            var passwordHelper = new PasswordHelper();
+            var userSignupService = new UserSignupService(userRepository, unitOfWork, passwordHelper);
+            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            return new SignupController(jwtTokenHelper, userSignupService);
         }
     }
 }

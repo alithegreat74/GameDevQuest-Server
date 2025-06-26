@@ -1,4 +1,5 @@
-﻿using GamedevQuest.Models;
+﻿using GamedevQuest.Context;
+using GamedevQuest.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamedevQuest.Repositories
@@ -6,9 +7,9 @@ namespace GamedevQuest.Repositories
     public class TestRepository
     {
         private readonly DbSet<Test> _tests;
-        public TestRepository(DbSet<Test> tests)
+        public TestRepository(GameDevQuestDbContext context)
         {
-            this._tests = tests;
+            this._tests = context.Tests;
         }
         public int GetNumberOfTests()
         {

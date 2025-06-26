@@ -15,7 +15,8 @@ string? DefaultConnectionString = new ConnectionHelper().GenerateConnectionStrin
 builder.Services.AddDbContext<GameDevQuestDbContext>(options =>
     options.UseNpgsql(DefaultConnectionString));
 
-builder.Services.AddScoped<JwtTokenHelper>();
+var dependencyInjectionHelper = new DependencyInjectionHelper(builder);
+dependencyInjectionHelper.AddInjections();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>

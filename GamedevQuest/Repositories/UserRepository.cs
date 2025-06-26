@@ -7,9 +7,9 @@ namespace GamedevQuest.Repositories
     public class UserRepository
     {
         private readonly DbSet<User> _set;
-        public UserRepository(DbSet<User> set)
+        public UserRepository(GameDevQuestDbContext context)
         {
-            _set = set;
+            _set = context.Users;
         }
         public async Task<User?> FindUser(string username, string email) 
         {
