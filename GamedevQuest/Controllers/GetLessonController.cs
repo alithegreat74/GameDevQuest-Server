@@ -1,34 +1,37 @@
 ﻿using GamedevQuest.Context;
+using GamedevQuest.Helpers.DatabaseHelpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
+using GamedevQuest.Repositories;
+using GamedevQuest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace GamedevQuest.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GetLessonController:ControllerBase
+    public class GetLessonController : ControllerBase
     {
-        private readonly GameDevQuestDbContext _context;
-        public GetLessonController(GameDevQuestDbContext context)
+        private readonly LessonService _lessonService;
+        private readonly TestService _testService;
+        public GetLessonController(LessonService lessonService, TestService testService)
         {
-            _context = context;
+            _lessonService = lessonService;
+            _testService = testService;
         }
 
         [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<LessonDetailResponseDto>> GetAsync(int id)
         {
-            Lesson find = await _context.Lessons.AsNoTracking().FirstOrDefaultAsync(lesson => lesson.Id == id);
-            if (find == null)
-                return NotFound("No lesson found with this id");
-            int relatedTestSize = find.RelatedTests.Count;
-            int randomTest = RandomNumberGenerator.GetInt32(1,relatedTestSize+1);
-            Test findTest = await _context.Tests.AsNoTracking().FirstOrDefaultAsync(test => test.Id == randomTest);
-            var response = new LessonDetailResponseDto(find, findTest);
+            (Lesson? lesson, string errorMessage) = await _lessonService.GetLesson(id);
+            if (lesson == null)
+                return BadRequest(errorMessage);
+            (Test? test, errorMessage) = await _testService.FindTestForLesson(lesson);
+            if(test == null)
+                return BadRequest(errorMessage);
+            var response = new LessonDetailResponseDto(lesson, test);
             return Ok(response);
         }
     }

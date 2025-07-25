@@ -1,5 +1,6 @@
 ﻿using GamedevQuest.Context;
 using GamedevQuest.Helpers;
+using GamedevQuest.Helpers.DatabaseHelpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -14,8 +15,8 @@ string? DefaultConnectionString = new ConnectionHelper().GenerateConnectionStrin
 builder.Services.AddDbContext<GameDevQuestDbContext>(options =>
     options.UseNpgsql(DefaultConnectionString));
 
-builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
-builder.Services.AddScoped<JwtTokenGenerator>();
+var dependencyInjectionHelper = new DependencyInjectionHelper(builder);
+dependencyInjectionHelper.AddInjections();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>

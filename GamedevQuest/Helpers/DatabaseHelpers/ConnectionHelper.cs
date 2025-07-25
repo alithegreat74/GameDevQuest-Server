@@ -1,4 +1,4 @@
-﻿namespace GamedevQuest.Helpers
+﻿namespace GamedevQuest.Helpers.DatabaseHelpers
 {
     public class ConnectionHelper
     {

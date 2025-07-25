@@ -5,11 +5,11 @@ using System.Text;
 
 namespace GamedevQuest.Helpers
 {
-    public class JwtTokenGenerator
+    public class JwtTokenHelper
     {
         private IConfiguration _config;
 
-        public JwtTokenGenerator(IConfiguration config)
+        public JwtTokenHelper(IConfiguration config)
         {
             _config = config;
         }
