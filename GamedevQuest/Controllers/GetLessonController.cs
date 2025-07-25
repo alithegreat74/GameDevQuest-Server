@@ -1,8 +1,5 @@
-﻿using GamedevQuest.Context;
-using GamedevQuest.Helpers.DatabaseHelpers;
-using GamedevQuest.Models;
+﻿using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
-using GamedevQuest.Repositories;
 using GamedevQuest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
