@@ -11,10 +11,15 @@ namespace GamedevQuest.Repositories
         {
             _set = context.Users;
         }
-        public async Task<User?> FindUser(string username, string email) 
+        public async Task<User?> FindUserNoTracking(string username, string email) 
         {
-            return await _set.FirstOrDefaultAsync
+            return await _set.AsNoTracking().FirstOrDefaultAsync
                 (user => user.Email.ToLower().Equals(email.ToLower()) || user.Username.ToLower().Equals(username.ToLower()));
+        }
+        public async Task<User?> FindUserNoTracking(string username)
+        {
+            return await _set.AsNoTracking().FirstOrDefaultAsync
+                (user => user.Username.ToLower().Equals(username.ToLower()));
         }
         public async Task<User?> FindUser(string username)
         {
@@ -24,6 +29,14 @@ namespace GamedevQuest.Repositories
         public async Task AddUser(User user)
         {
             await _set.AddAsync(user);
+        }
+        public async Task<User?> AddUserXp(string username, int xp)
+        {
+            User? user = await FindUser(username);
+            if (user == null)
+                return null;
+            user.UpdateXp(xp);
+            return user;
         }
     }
 }

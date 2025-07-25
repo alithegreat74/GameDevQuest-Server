@@ -1,11 +1,7 @@
-﻿using GamedevQuest.Context;
-using GamedevQuest.Models;
-using GamedevQuest.Models.DTO;
-using GamedevQuest.Repositories;
+﻿using GamedevQuest.Models.DTO;
 using GamedevQuest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GamedevQuest.Controllers
 {

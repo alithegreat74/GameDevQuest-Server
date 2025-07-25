@@ -23,6 +23,7 @@ namespace GamedevQuest.Helpers
             _builder.Services.AddScoped<TestService>();
             _builder.Services.AddScoped<JwtTokenHelper>();
             _builder.Services.AddScoped<PasswordHelper>();
+            _builder.Services.AddScoped<UserService>();
         }
     }
 }
