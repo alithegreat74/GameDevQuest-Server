@@ -30,13 +30,5 @@ namespace GamedevQuest.Repositories
         {
             await _set.AddAsync(user);
         }
-        public async Task<User?> AddUserXp(string username, int xp)
-        {
-            User? user = await FindUser(username);
-            if (user == null)
-                return null;
-            user.UpdateXp(xp);
-            return user;
-        }
     }
 }

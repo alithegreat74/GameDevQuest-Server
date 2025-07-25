@@ -31,7 +31,8 @@ namespace GamedevQuest.Services
         }
         private bool TryAddSolvedLesson(User user, int lessonId)
         {
-            if(user.SolvedLessons.Contains(lessonId))
+            user.SolvedLessons ??= new List<int>();
+            if (user.SolvedLessons.Contains(lessonId))
                 return false;
             user.SolvedLessons.Add(lessonId);
             return true;
