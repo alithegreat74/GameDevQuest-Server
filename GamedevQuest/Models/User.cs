@@ -34,8 +34,6 @@ namespace GamedevQuest.Models
                 Xp-=LevelXp;
                 Level++;
             }
-            if (Xp < 0)
-                Xp = 0;
         }
     }
 }
