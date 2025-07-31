@@ -17,6 +17,8 @@ builder.Services.AddDbContext<GameDevQuestDbContext>(options =>
 
 var dependencyInjectionHelper = new DependencyInjectionHelper(builder);
 dependencyInjectionHelper.AddInjections();
+var corsHelper = new CorsHelper(builder);
+corsHelper.SetUpCorsPolicy();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
@@ -39,7 +41,7 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseHealthChecks("/health");
-
+app.UseCors(corsHelper.GetDefaultCorsName());
 app.UseAuthentication();
 app.UseAuthorization();
 
