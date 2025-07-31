@@ -41,7 +41,10 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseHealthChecks("/health");
-app.UseCors(corsHelper.GetDefaultCorsName());
+string defaultCorsPolicyName = corsHelper.GetDefaultCorsName();
+if(!string.IsNullOrEmpty(defaultCorsPolicyName))
+    app.UseCors(defaultCorsPolicyName);
+
 app.UseAuthentication();
 app.UseAuthorization();
 

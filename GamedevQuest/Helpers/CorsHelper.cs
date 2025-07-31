@@ -6,8 +6,8 @@ namespace GamedevQuest.Helpers
     {
         private class CorsOrigin
         {
-            public string Name {  get; set; }
-            public string Url { get; set; }
+            public string Name {  get; set; } = string.Empty;
+            public string Url { get; set; } = string.Empty;
         }
         private readonly WebApplicationBuilder _builder;
         private List<CorsOrigin>? _allowedOrigins;
@@ -19,7 +19,7 @@ namespace GamedevQuest.Helpers
         public void SetUpCorsPolicy()
         {
             _allowedOrigins = _builder.Configuration.GetSection("Cors:AllowedOrigins").Get<List<CorsOrigin>>();
-            if (_allowedOrigins == null || _allowedOrigins.Count < 0)
+            if (_allowedOrigins == null || _allowedOrigins.Count == 0)
                 return;
             _builder.Services.AddCors(options =>
             {
@@ -39,7 +39,7 @@ namespace GamedevQuest.Helpers
         }
         public string GetDefaultCorsName()
         {
-            if(_allowedOrigins==null || _allowedOrigins.Count < 0 || string.IsNullOrEmpty(_allowedOrigins[0].Name))
+            if(_allowedOrigins==null || _allowedOrigins.Count == 0 || string.IsNullOrEmpty(_allowedOrigins[0].Name))
                 return string.Empty;
 
             return _allowedOrigins[0].Name;
