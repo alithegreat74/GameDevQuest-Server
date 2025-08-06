@@ -11,20 +11,25 @@ namespace GamedevQuest.Repositories
         {
             _set = context.Users;
         }
-        public async Task<User?> FindUserNoTracking(string username, string email) 
+        public async Task<User?> FindUserByEmailNoTracking(string email) 
         {
             return await _set.AsNoTracking().FirstOrDefaultAsync
-                (user => user.Email.ToLower().Equals(email.ToLower()) || user.Username.ToLower().Equals(username.ToLower()));
+                (user => user.Email!=null && user.Email.ToLower().Equals(email.ToLower()));
         }
-        public async Task<User?> FindUserNoTracking(string username)
+        public async Task<User?> FindUserByUsernameNoTracking(string username)
         {
             return await _set.AsNoTracking().FirstOrDefaultAsync
-                (user => user.Username.ToLower().Equals(username.ToLower()));
+                (user => user.Username != null && user.Username.ToLower().Equals(username.ToLower()));
         }
-        public async Task<User?> FindUser(string username)
+        public async Task<User?> FindUserByUsername(string username)
         {
             return await _set.FirstOrDefaultAsync
-                (user => user.Username.ToLower().Equals(username.ToLower()));
+                (user => user.Username != null && user.Username.ToLower().Equals(username.ToLower()));
+        }
+        public async Task<User?> FindUserByEmail(string email)
+        {
+            return await _set.FirstOrDefaultAsync
+                (user => user.Email != null && user.Email.ToLower().Equals(email.ToLower()));
         }
         public async Task AddUser(User user)
         {

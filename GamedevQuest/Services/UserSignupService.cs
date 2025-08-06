@@ -19,7 +19,7 @@ namespace GamedevQuest.Services
         }
         public async Task<(bool canCreate,string errorMessage)> CanCreateUser(SignupRequestDto dto)
         {
-            User? duplicateUser = await _userRepository.FindUserNoTracking(dto.Username, dto.Email);
+            User? duplicateUser = await _userRepository.FindUserByEmailNoTracking(dto.Email);
             if (duplicateUser != default(User))
                 return new (false, "A user already exists with the same username or email");
             return new (true, "");
@@ -28,7 +28,7 @@ namespace GamedevQuest.Services
         {
             await _unitOfWork.StartTransaction();
             string hashedPassword = _passwordHelper.HashPassword(dto.Password);
-            var newUser = new User(dto.Email, "", "", dto.Username, hashedPassword);
+            var newUser = new User(dto.Email, "", "", "", hashedPassword);
             await _userRepository.AddUser(newUser);
             await _unitOfWork.CommitChanges();
             return newUser;
