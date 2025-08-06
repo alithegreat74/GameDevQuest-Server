@@ -17,7 +17,7 @@ namespace GamedevQuest.Services
         }
         public async Task<(User? user, string errorMessage)> ValidateUserLogin(LoginRequestDto request)
         {
-            var userMatch = await _repository.FindUserNoTracking(request.Username);
+            var userMatch = await _repository.FindUserByUsernameNoTracking(request.Username);
             if (userMatch == null || !_passwordHelper.VerifyPassword(userMatch.Password, request.Password))
                 return (null, "No User found");
 

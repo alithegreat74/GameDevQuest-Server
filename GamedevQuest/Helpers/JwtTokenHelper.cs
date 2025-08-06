@@ -13,11 +13,11 @@ namespace GamedevQuest.Helpers
         {
             _config = config;
         }
-        public string GenerateToken(string username)
+        public string GenerateToken(string email)
         {
             var claims = new Claim[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, email)
             };
             Console.Write(_config["jwt:Key"]);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["jwt:Key"]));

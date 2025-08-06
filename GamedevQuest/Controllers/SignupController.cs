@@ -26,7 +26,7 @@ namespace GamedevQuest.Controllers
             if(!canCreateUser)
                 return BadRequest(errorMessage);
             User newUser = await _userSignupService.CreateUser(request);
-            string token = _jwtTokenGenerator.GenerateToken(newUser.Username);
+            string token = _jwtTokenGenerator.GenerateToken(newUser.Email);
             return Ok(new SignupResponseDto(newUser, token));
         }
     }

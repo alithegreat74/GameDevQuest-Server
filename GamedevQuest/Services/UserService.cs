@@ -13,15 +13,15 @@ namespace GamedevQuest.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
-        public async Task<User?> FindUser(string username) => await _userRepository.FindUserNoTracking(username);
-        public async Task<(User?, string)> AddUserXp(string username, int xp, int lessonId)
+        public async Task<User?> FindUser(string username) => await _userRepository.FindUserByUsernameNoTracking(username);
+        public async Task<(User?, string)> AddUserXp(string email, int xp, int lessonId)
         {
             await _unitOfWork.StartTransaction();
-            User? user = await _userRepository.FindUser(username);
+            User? user = await _userRepository.FindUserByEmail(email);
             if (user == null)
             {
                 await _unitOfWork.RollBackChanges();
-                return (null,$"Could not find user with username: {username}");
+                return (null,$"Could not find user with email: {email}");
             } 
             if(!TryAddSolvedLesson(user, lessonId))
                 return (null, $"The user has already done this lesson");
