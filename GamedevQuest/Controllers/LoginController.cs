@@ -1,12 +1,8 @@
-﻿using GamedevQuest.Context;
-using GamedevQuest.Helpers;
-using GamedevQuest.Helpers.DatabaseHelpers;
+﻿using GamedevQuest.Helpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
-using GamedevQuest.Repositories;
 using GamedevQuest.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace GamedevQuest.Controllers
 {
@@ -23,15 +19,15 @@ namespace GamedevQuest.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<LoginResponseDto>> PostAsync([FromBody] LoginRequestDto request)
+        public async Task<IActionResult> PostAsync([FromBody] LoginRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            (User? user, string errorMessage) = await _userLoginService.ValidateUserLogin(request);
-            if (user==null)
-                return Unauthorized(errorMessage);
-            string token = _jwtTokenGenerator.GenerateToken(request.Username);
-            return Ok(new LoginResponseDto(user, token));
+            OperationResult<User> result = await _userLoginService.ValidateUserLogin(request);
+            if (result.Result == null)
+                return result.ActionResultObject;
+            string token = _jwtTokenGenerator.GenerateToken(result.Result.Email);
+            return Ok(new LoginResponseDto(result.Result, token));
         }
     }
 }

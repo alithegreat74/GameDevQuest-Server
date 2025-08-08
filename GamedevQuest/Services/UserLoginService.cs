@@ -2,6 +2,7 @@
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GamedevQuest.Services
 {
@@ -15,13 +16,24 @@ namespace GamedevQuest.Services
             _repository = repository;
             _passwordHelper = passwordHelper;
         }
-        public async Task<(User? user, string errorMessage)> ValidateUserLogin(LoginRequestDto request)
+        public async Task<OperationResult<User>> ValidateUserLogin(LoginRequestDto request)
         {
             var userMatch = await _repository.FindUserByUsernameNoTracking(request.Username);
-            if (userMatch == null || !_passwordHelper.VerifyPassword(userMatch.Password, request.Password))
-                return (null, "No User found");
+            if (userMatch == null)
+                return new OperationResult<User>(new UnauthorizedObjectResult("Invalid username or password"));
 
-            return (userMatch, "");
+            try
+            {
+                if (!_passwordHelper.VerifyPassword(userMatch.Password, request.Password))
+                {
+                    return new OperationResult<User>(new UnauthorizedObjectResult("Invalid username or password"));
+                }
+            }
+            catch(FormatException e)
+            {
+                return new OperationResult<User>(new UnauthorizedObjectResult("Invalid username or password"));
+            }
+            return new OperationResult<User>(userMatch);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using GamedevQuest.Models;
 using GamedevQuest.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 
 namespace GamedevQuest.Services
@@ -12,18 +13,17 @@ namespace GamedevQuest.Services
         {
             _repository = repository;
         }
-        public async Task<(Test? test, string errorMessage)> GetTest(int id)
+        public async Task<OperationResult<Test>> GetTest(int id)
         {
             Test? findTest = await _repository.GetTest(id);
             if (findTest == null)
-                return (findTest, $"Couldn't find test with id: {id}");
-            return (findTest,"");
+                return new OperationResult<Test>(new NotFoundObjectResult($"Couldn't find test with id: {id}"));
+            return new OperationResult<Test>(findTest);
         }
-        public async Task<(Test? test, string errorMessage)> FindTestForLesson(Lesson lesson)
+        public async Task<OperationResult<Test>> FindTestForLesson(Lesson lesson)
         {
             if (lesson.RelatedTests == null || lesson.RelatedTests.Count == 0)
-                return (null, "No tests available for this lesson");
-
+                return new OperationResult<Test>(new NotFoundObjectResult("No tests available for this lesson"));
             int relatedTestSize = lesson.RelatedTests.Count;
             int randomTest = RandomNumberGenerator.GetInt32(0, relatedTestSize);
             return await GetTest(lesson.RelatedTests[randomTest]);
