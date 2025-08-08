@@ -1,6 +1,7 @@
 ﻿using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -15,13 +16,13 @@ namespace GamedevQuest.Services
             _repository = repository;
         }
 
-        public async Task<(Lesson? lesson, string errorMessage)> GetLesson(int id)
+        public async Task<OperationResult<Lesson>> GetLesson(int id)
         {
             Lesson? find = await _repository.GetLesson(id);
             if (find == null)
-                return (find, "No lesson found with this id");
+                return new OperationResult<Lesson>(new NotFoundObjectResult("No lesson found with this id"));
 
-            return (find, "");
+            return new OperationResult<Lesson>(find);
         }
         public List<LessonResponseDto> GetAllLessons()
         {

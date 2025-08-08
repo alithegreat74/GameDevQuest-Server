@@ -20,15 +20,15 @@ namespace GamedevQuest.Controllers
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<LessonDetailResponseDto>> GetAsync(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
-            (Lesson? lesson, string errorMessage) = await _lessonService.GetLesson(id);
-            if (lesson == null)
-                return BadRequest(errorMessage);
-            (Test? test, errorMessage) = await _testService.FindTestForLesson(lesson);
-            if(test == null)
-                return BadRequest(errorMessage);
-            var response = new LessonDetailResponseDto(lesson, test);
+            OperationResult<Lesson> findLessonResult = await _lessonService.GetLesson(id);
+            if (findLessonResult.Result == null)
+                return findLessonResult.ActionResultObject;
+            OperationResult<Test> findTestResult= await _testService.FindTestForLesson(findLessonResult.Result);
+            if (findTestResult.Result == null)
+                return findLessonResult.ActionResultObject;
+            var response = new LessonDetailResponseDto(findLessonResult.Result, findTestResult.Result);
             return Ok(response);
         }
     }

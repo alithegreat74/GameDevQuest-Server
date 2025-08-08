@@ -1,4 +1,5 @@
 ﻿using GamedevQuest.Helpers;
+using GamedevQuest.Models.DTO;
 
 namespace GamedevQuest.Models
 {
@@ -34,6 +35,12 @@ namespace GamedevQuest.Models
                 Xp-=LevelXp;
                 Level++;
             }
+        }
+        public void UpdateInfo(CompleteInfoRequestDto data)
+        {
+            Username = data.Username;
+            FirstName = data.FirstName;
+            LastName = data.LastName;
         }
     }
 }

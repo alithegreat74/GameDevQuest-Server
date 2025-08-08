@@ -3,6 +3,7 @@ using GamedevQuest.Helpers.DatabaseHelpers;
 using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GamedevQuest.Services
 {
@@ -17,12 +18,12 @@ namespace GamedevQuest.Services
             _unitOfWork = unitOfWork;
             _passwordHelper = passwordHelper;
         }
-        public async Task<(bool canCreate,string errorMessage)> CanCreateUser(SignupRequestDto dto)
+        public async Task<OperationResult<bool>> CanCreateUser(SignupRequestDto dto)
         {
             User? duplicateUser = await _userRepository.FindUserByEmailNoTracking(dto.Email);
             if (duplicateUser != default(User))
-                return new (false, "A user already exists with the same username or email");
-            return new (true, "");
+                return new OperationResult<bool>(new ConflictObjectResult("A user already exists with the same username or email"));
+            return new OperationResult<bool>(true);
         }
         public async Task<User> CreateUser(SignupRequestDto dto)
         {

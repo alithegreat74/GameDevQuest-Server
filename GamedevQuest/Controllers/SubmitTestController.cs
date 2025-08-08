@@ -23,22 +23,22 @@ namespace GamedevQuest.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<TestResponseDto>> PostAsync([FromBody] TestRequestDto body)
+        public async Task<IActionResult> PostAsync([FromBody] TestRequestDto body)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            (Test? test, string errorMessage) = await _testService.GetTest(body.TestId);
-            if (test == null)
-                return NotFound(errorMessage);
-            if (test.Answer != body.Answer)
+            OperationResult<Test> findTestResult = await _testService.GetTest(body.TestId);
+            if (findTestResult.Result == null)
+                return findTestResult.ActionResultObject;
+            if (findTestResult.Result.Answer!= body.Answer)
                 return BadRequest($"Wrong Answer for test {body.TestId}");
             string? email = User.FindFirst(ClaimTypes.Name)?.Value;
             if (string.IsNullOrEmpty(email))
                 return NotFound("There was a problem in retrieving the user data");
-            (User? user, errorMessage) = await _userService.AddUserXp(email, test.TestXp, body.LessonId);
-            if (user == null)
-                return BadRequest(errorMessage);
-            return Ok(new TestResponseDto(user));
+            OperationResult<User> result = await _userService.AddUserXp(email, findTestResult.Result.TestXp, body.LessonId);
+            if (result.Result == null)
+                return result.ActionResultObject;
+            return Ok(new TestResponseDto(result.Result));
         }
 
     }

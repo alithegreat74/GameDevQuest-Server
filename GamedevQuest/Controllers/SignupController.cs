@@ -18,13 +18,13 @@ namespace GamedevQuest.Controllers
             _userSignupService = userServiceService;
         }
         [HttpPost]
-        public async Task<ActionResult<SignupResponseDto>> PostAsync([FromBody] SignupRequestDto request)
+        public async Task<IActionResult> PostAsync([FromBody] SignupRequestDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            (bool canCreateUser, string errorMessage) = await _userSignupService.CanCreateUser(request);
-            if(!canCreateUser)
-                return BadRequest(errorMessage);
+            OperationResult<bool> result = await _userSignupService.CanCreateUser(request);
+            if(!result.Result)
+                return result.ActionResultObject;
             User newUser = await _userSignupService.CreateUser(request);
             string token = _jwtTokenGenerator.GenerateToken(newUser.Email);
             return Ok(new SignupResponseDto(newUser, token));
