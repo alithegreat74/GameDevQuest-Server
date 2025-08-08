@@ -20,7 +20,7 @@ namespace GamedevQuest.Services
         {
             Lesson? find = await _repository.GetLesson(id);
             if (find == null)
-                return new OperationResult<Lesson>(new NotFoundObjectResult("No lesson found with this id"));
+                return new OperationResult<Lesson>(new NotFoundObjectResult($"No lesson found with id {id}"));
 
             return new OperationResult<Lesson>(find);
         }

@@ -36,11 +36,11 @@ namespace GamedevQuest.Models
                 Level++;
             }
         }
-        public void UpdateInfo(CompleteInfoRequestDto data)
+        public void UpdateInfo(string username, string firstName, string lastName)
         {
-            Username = data.Username;
-            FirstName = data.FirstName;
-            LastName = data.LastName;
+            Username = username;
+            FirstName = firstName;
+            LastName = lastName;
         }
     }
 }

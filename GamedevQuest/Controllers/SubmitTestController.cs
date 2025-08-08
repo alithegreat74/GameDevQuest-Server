@@ -30,7 +30,7 @@ namespace GamedevQuest.Controllers
             OperationResult<Test> findTestResult = await _testService.GetTest(body.TestId);
             if (findTestResult.Result == null)
                 return findTestResult.ActionResultObject;
-            if (findTestResult.Result.Answer!= body.Answer)
+            if (!string.Equals(body.Answer.Trim(), findTestResult.Result.Answer.Trim(), StringComparison.OrdinalIgnoreCase))
                 return BadRequest($"Wrong Answer for test {body.TestId}");
             string? email = User.FindFirst(ClaimTypes.Name)?.Value;
             if (string.IsNullOrEmpty(email))

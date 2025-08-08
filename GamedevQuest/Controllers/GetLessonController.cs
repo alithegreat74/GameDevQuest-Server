@@ -27,7 +27,7 @@ namespace GamedevQuest.Controllers
                 return findLessonResult.ActionResultObject;
             OperationResult<Test> findTestResult= await _testService.FindTestForLesson(findLessonResult.Result);
             if (findTestResult.Result == null)
-                return findLessonResult.ActionResultObject;
+                return findTestResult.ActionResultObject;
             var response = new LessonDetailResponseDto(findLessonResult.Result, findTestResult.Result);
             return Ok(response);
         }

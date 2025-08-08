@@ -21,9 +21,9 @@ namespace GamedevQuest.Models.DTO
     {
         public int Id { get; private set; }
         public string Email { get; private set; }
-        public string Username { set; private get; }
-        public string FirstName { set; private get; }
-        public string LastName { set; private get; }
+        public string Username { get; private set; }
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
         public CompleteInfoResponseDto(User user)
         {
             if(user==null)

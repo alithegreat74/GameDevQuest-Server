@@ -18,15 +18,23 @@ namespace GamedevQuest.Services
         public async Task<OperationResult<User>> CompleteUserInfo(string email, CompleteInfoRequestDto info)
         {
             await _unitOfWork.StartTransaction();
-            User? user = await _userRepository.FindUserByEmail(email);
-            if (user == null)
-                return new OperationResult<User>(new NotFoundObjectResult($"Couldn't find user with email: {email}"));
-            User? userWithSameUsername = await _userRepository.FindUserByUsernameNoTracking(info.Username);
-            if (userWithSameUsername != null && user.Id != userWithSameUsername.Id)
-                return new OperationResult<User>(new ConflictObjectResult($"A user with the same username exists"));
-            user.UpdateInfo(info);
-            await _unitOfWork.CommitChanges();
-            return new OperationResult<User>(user);
+            try
+            {
+                User? user = await _userRepository.FindUserByEmail(email);
+                if (user == null)
+                    return new OperationResult<User>(new NotFoundObjectResult($"Couldn't find user with email: {email}"));
+                User? userWithSameUsername = await _userRepository.FindUserByUsernameNoTracking(info.Username);
+                if (userWithSameUsername != null && user.Id != userWithSameUsername.Id)
+                    return new OperationResult<User>(new ConflictObjectResult($"A user with the same username exists"));
+                user.UpdateInfo(info.Username, info.FirstName, info.LastName);
+                await _unitOfWork.CommitChanges();
+                return new OperationResult<User>(user);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollBackChanges();
+                return new OperationResult<User>(new UnprocessableEntityObjectResult(ex.Message));
+            }
         }
         public async Task<OperationResult<User>> AddUserXp(string email, int xp, int lessonId)
         {
@@ -38,7 +46,10 @@ namespace GamedevQuest.Services
                 return new OperationResult<User>(new NotFoundObjectResult($"Could not find user with email: {email}"));
             } 
             if(!TryAddSolvedLesson(user, lessonId))
+            {
+                await _unitOfWork.RollBackChanges();
                 return new OperationResult<User>(new ConflictObjectResult($"The user has already done this lesson"));
+            }
             user.UpdateXp(xp);
             await _unitOfWork.CommitChanges();
             return new OperationResult<User>(user);
