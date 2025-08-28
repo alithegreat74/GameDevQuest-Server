@@ -18,8 +18,8 @@
         public string Title { get; private set; }
         public string Description { get; private set; }
         public int MinimumRequiredLevel { get; private set; }
-        public List<Test> Tests { get; private set; }
-        public LessonDetailResponseDto(Lesson lesson,  List<Test> tests)
+        public List<TestSummaryDto> Tests { get; private set; }
+        public LessonDetailResponseDto(Lesson lesson,  List<TestSummaryDto> tests)
         {
             Id = lesson.Id;
             Title = lesson.LessonTitle;

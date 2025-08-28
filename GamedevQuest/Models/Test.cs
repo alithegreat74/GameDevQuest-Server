@@ -9,7 +9,6 @@ namespace GamedevQuest.Models
         public string TestDescription { get; private set; }
         public string Answer {  get; private set; }
         public int TestXp { get; private set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TestType Type { get; private set;}
         public string? Payload { get; private set; }
         public Test(int id, string testDescription, string answer, int testXp, TestType type, string payload)
@@ -21,6 +20,7 @@ namespace GamedevQuest.Models
             Payload = payload;
             Type = type;
         }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum TestType
         {
             TextInput = 1,
