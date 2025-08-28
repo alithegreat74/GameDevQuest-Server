@@ -24,18 +24,19 @@ namespace GamedevQuest.Services
         public async Task<OperationResult<List<TestSummaryDto>>> FindTestsForLesson(Lesson lesson)
         {
             if (lesson.RelatedTests == null || lesson.RelatedTests.Count == 0)
-                return new OperationResult<List<TestSummaryDto>>(new NotFoundObjectResult("No tests available for this lesson"));
+                return new OperationResult<List<TestSummaryDto>>(new List<TestSummaryDto>());
 
-            var tasks = lesson.RelatedTests.Select(testId => GetTest(testId)).ToList();
-            var results = await Task.WhenAll(tasks);
+            var summaries = new List<TestSummaryDto>(lesson.RelatedTests.Count);
+            foreach(var test in lesson.RelatedTests)
+            {
+                var operationResult = await GetTest(test);
+                if (operationResult.Result == null)
+                    continue;
 
-            return new OperationResult<List<TestSummaryDto>>(
-                results.Select(result => result.Result)
-                        .OfType<Test>()
-                        .Select(test=>new TestSummaryDto(test))
-                        .ToList()
-                );
+                summaries.Add(new TestSummaryDto(operationResult.Result));
+            }
 
+            return new OperationResult<List<TestSummaryDto>>(summaries);
         }
     }
 }
