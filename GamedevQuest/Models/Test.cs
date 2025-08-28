@@ -1,10 +1,31 @@
-﻿namespace GamedevQuest.Models
+﻿using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
+
+namespace GamedevQuest.Models
 {
     public class Test
     {
         public int Id {  get; set; }
-        public string TestDescription { get; set; }
-        public string Answer {  get; set; }
-        public int TestXp { get; set; }
+        public string TestDescription { get; private set; }
+        public string Answer {  get; private set; }
+        public int TestXp { get; private set; }
+        public TestType Type { get; private set;}
+        public string? Payload { get; private set; }
+        public Test(int id, string testDescription, string answer, int testXp, TestType type, string payload)
+        {
+            Id = id;
+            TestDescription = testDescription;
+            Answer = answer;
+            TestXp = testXp;
+            Payload = payload;
+            Type = type;
+        }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public enum TestType
+        {
+            TextInput = 1,
+            MultipleQuestion = 2,
+            TrueFalse = 3,
+        }
     }
 }

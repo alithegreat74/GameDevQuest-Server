@@ -1,4 +1,5 @@
 ﻿using GamedevQuest.Models;
+using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
@@ -20,13 +21,22 @@ namespace GamedevQuest.Services
                 return new OperationResult<Test>(new NotFoundObjectResult($"Couldn't find test with id: {id}"));
             return new OperationResult<Test>(findTest);
         }
-        public async Task<OperationResult<Test>> FindTestForLesson(Lesson lesson)
+        public async Task<OperationResult<List<TestSummaryDto>>> FindTestsForLesson(Lesson lesson)
         {
             if (lesson.RelatedTests == null || lesson.RelatedTests.Count == 0)
-                return new OperationResult<Test>(new NotFoundObjectResult("No tests available for this lesson"));
-            int relatedTestSize = lesson.RelatedTests.Count;
-            int randomTest = RandomNumberGenerator.GetInt32(0, relatedTestSize);
-            return await GetTest(lesson.RelatedTests[randomTest]);
+                return new OperationResult<List<TestSummaryDto>>(new List<TestSummaryDto>());
+
+            var summaries = new List<TestSummaryDto>(lesson.RelatedTests.Count);
+            foreach(var test in lesson.RelatedTests)
+            {
+                var operationResult = await GetTest(test);
+                if (operationResult.Result == null)
+                    continue;
+
+                summaries.Add(new TestSummaryDto(operationResult.Result));
+            }
+
+            return new OperationResult<List<TestSummaryDto>>(summaries);
         }
     }
 }
