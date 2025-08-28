@@ -20,13 +20,20 @@ namespace GamedevQuest.Services
                 return new OperationResult<Test>(new NotFoundObjectResult($"Couldn't find test with id: {id}"));
             return new OperationResult<Test>(findTest);
         }
-        public async Task<OperationResult<Test>> FindTestForLesson(Lesson lesson)
+        public async Task<OperationResult<List<Test>>> FindTestForLesson(Lesson lesson)
         {
             if (lesson.RelatedTests == null || lesson.RelatedTests.Count == 0)
-                return new OperationResult<Test>(new NotFoundObjectResult("No tests available for this lesson"));
-            int relatedTestSize = lesson.RelatedTests.Count;
-            int randomTest = RandomNumberGenerator.GetInt32(0, relatedTestSize);
-            return await GetTest(lesson.RelatedTests[randomTest]);
+                return new OperationResult<List<Test>>(new NotFoundObjectResult("No tests available for this lesson"));
+
+            var tasks = lesson.RelatedTests.Select(testId => GetTest(testId)).ToList();
+            var results = await Task.WhenAll(tasks);
+
+            return new OperationResult<List<Test>>(
+                results.Where(result => result.Result != null)
+                       .Select(result => result.Result!)
+                       .ToList()
+                );
+
         }
     }
 }
