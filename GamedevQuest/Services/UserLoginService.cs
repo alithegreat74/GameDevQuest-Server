@@ -18,7 +18,7 @@ namespace GamedevQuest.Services
         }
         public async Task<OperationResult<User>> ValidateUserLogin(LoginRequestDto request)
         {
-            var userMatch = await _repository.FindUserByUsernameNoTracking(request.Username);
+            var userMatch = await _repository.FindUserByEmailOrUsernameNoTracking(request.UserIdentifier);
             if (userMatch == null)
                 return new OperationResult<User>(new UnauthorizedObjectResult("Invalid username or password"));
 
