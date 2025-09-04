@@ -11,15 +11,21 @@ namespace GamedevQuest.Repositories
         {
             _set = context.Users;
         }
-        public async Task<User?> FindUserByEmailNoTracking(string email) 
+        public async Task<User?> FindUserByEmailNoTracking(string email)
         {
             return await _set.AsNoTracking().FirstOrDefaultAsync
-                (user => user.Email!=null && user.Email.ToLower().Equals(email.ToLower()));
+                (user => user.Email != null && user.Email.ToLower().Equals(email.ToLower()));
         }
         public async Task<User?> FindUserByUsernameNoTracking(string username)
         {
             return await _set.AsNoTracking().FirstOrDefaultAsync
                 (user => user.Username != null && user.Username.ToLower().Equals(username.ToLower()));
+        }
+        public async Task<User?> FindUserByEmailOrUsernameNoTracking(string userIdentifier)
+        {
+            return await _set.AsNoTracking().FirstOrDefaultAsync
+                (user => (user.Email != null && user.Email.ToLower().Equals(userIdentifier.ToLower())) ||
+                         (user.Username != null && user.Username.ToLower().Equals(userIdentifier.ToLower())));
         }
         public async Task<User?> FindUserByUsername(string username)
         {

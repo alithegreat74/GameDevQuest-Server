@@ -24,7 +24,7 @@ namespace GamedevQuestTests.Login
             //Arrange
             var request = new LoginRequestDto
             {
-                Username = "username",
+                UserIdentifier = "username",
                 Password = "password",
             };
             GameDevQuestDbContext context = Utility.GetContext();
@@ -36,7 +36,7 @@ namespace GamedevQuestTests.Login
             //Assert
             var okResult = Assert.IsType<OkObjectResult>(response.Result);
             var loginResponseDto = Assert.IsType<LoginResponseDto>(okResult.Value);
-            Assert.True(loginResponseDto.Username?.Equals(request.Username));
+            Assert.True(loginResponseDto.Username?.Equals(request.UserIdentifier));
         }
         [Fact]
         [Trait("Category", "Integration")]
@@ -45,7 +45,7 @@ namespace GamedevQuestTests.Login
             //Arrange
             var request = new LoginRequestDto
             {
-                Username = "",
+                UserIdentifier = "",
                 Password = "password",
             };
             GameDevQuestDbContext context = Utility.GetContext();
@@ -65,7 +65,7 @@ namespace GamedevQuestTests.Login
             //Arrange
             var request = new LoginRequestDto
             {
-                Username = "username",
+                UserIdentifier = "username",
                 Password = "",
             };
             GameDevQuestDbContext context = Utility.GetContext();
@@ -85,13 +85,13 @@ namespace GamedevQuestTests.Login
             //Arrange
             var request = new LoginRequestDto
             {
-                Username = "username",
+                UserIdentifier = "username",
                 Password = "wrongPassword",
             };
             GameDevQuestDbContext context = Utility.GetContext();
             var sut = CreateSystemUnderTest(context);
             await RemoveAllUsers(context);
-            User dummyUser = CreateDummyUser(request.Username, "password");
+            User dummyUser = CreateDummyUser(request.UserIdentifier, "password");
             await context.Users.AddAsync(dummyUser);
             await context.SaveChangesAsync();
 
@@ -108,7 +108,7 @@ namespace GamedevQuestTests.Login
             //Arrange
             var request = new LoginRequestDto
             {
-                Username = "wrongUsername",
+                UserIdentifier = "wrongUsername",
                 Password = "password",
             };
             GameDevQuestDbContext context = Utility.GetContext();
