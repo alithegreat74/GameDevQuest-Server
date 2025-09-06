@@ -8,15 +8,13 @@ namespace GamedevQuest.Models
         public int Id {  get; set; }
         public string TestDescription { get; private set; }
         public string Answer {  get; private set; }
-        public int TestXp { get; private set; }
         public TestType Type { get; private set;}
         public string? Payload { get; private set; }
-        public Test(int id, string testDescription, string answer, int testXp, TestType type, string payload)
+        public Test(int id, string testDescription, string answer, TestType type, string payload)
         {
             Id = id;
             TestDescription = testDescription;
             Answer = answer;
-            TestXp = testXp;
             Payload = payload;
             Type = type;
         }

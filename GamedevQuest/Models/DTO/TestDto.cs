@@ -34,14 +34,12 @@ namespace GamedevQuest.Models.DTO
     {
         public int Id { get; set; }
         public string TestDescription { get; private set; }
-        public int TestXp { get; private set; }
         public TestType Type { get; private set; }
         public string? Payload { get; private set; }
         public TestSummaryDto(Test test)
         {
             this.Id = test.Id;
             this.TestDescription = test.TestDescription;
-            this.TestXp = test.TestXp;
             this.Type = test.Type;
             this.Payload = test.Payload;
         }
