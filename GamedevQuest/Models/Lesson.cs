@@ -18,7 +18,6 @@
             Xp = xp;
             RelatedTests = relatedTests;
             LessonImageUrl = lessonImageUrl;
-            Tags = tags;
         }
     }
 }

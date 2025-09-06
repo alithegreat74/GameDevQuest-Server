@@ -35,6 +35,8 @@ namespace GamedevQuest.Controllers
             OperationResult<Lesson> findLessonResult = await _lessonService.GetLesson(body.LessonId);
             if (findLessonResult.Result == null)
                 return findLessonResult.ActionResultObject;
+            if (findLessonResult.Result.RelatedTests.Contains(body.TestId))
+                return BadRequest($"Test {body.TestId} does not belong to lesson {body.LessonId}");
             if (!string.Equals(body.Answer.Trim(), findTestResult.Result.Answer.Trim(), StringComparison.OrdinalIgnoreCase))
                 return BadRequest($"Wrong Answer for test {body.TestId}");
             string? email = User.FindFirst(ClaimTypes.Name)?.Value;
