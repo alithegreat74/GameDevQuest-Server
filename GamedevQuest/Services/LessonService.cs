@@ -2,18 +2,18 @@
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
 
 namespace GamedevQuest.Services
 {
     public class LessonService
     {
         private readonly LessonRepository _repository;
+        private readonly UserService _userService;
        
-        public LessonService(LessonRepository repository)
+        public LessonService(LessonRepository repository, UserService userService)
         {
             _repository = repository;
+            _userService = userService;
         }
 
         public async Task<OperationResult<Lesson>> GetLesson(int id)
@@ -24,10 +24,11 @@ namespace GamedevQuest.Services
 
             return new OperationResult<Lesson>(find);
         }
-        public List<LessonResponseDto> GetAllLessons()
+        public List<LessonResponseDto> GetAllLessons(User user)
         {
             List<Lesson> lessons =  _repository.GetAllLessons();
-            return lessons.Select(lesson => new LessonResponseDto(lesson)).ToList();
+
+            return lessons.Select(lesson => new LessonResponseDto(lesson, user)).ToList();
         }
     }
 }

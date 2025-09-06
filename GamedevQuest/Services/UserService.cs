@@ -15,6 +15,14 @@ namespace GamedevQuest.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
+        public async Task<OperationResult<User>> GetUserByEmail(string email)
+        {
+            User? user = await _userRepository.FindUserByEmailNoTracking(email);
+            if (user == null)
+                return new OperationResult<User>(new NotFoundObjectResult($"Could not find user"));
+
+            return new OperationResult<User>(user);
+        }
         public async Task<OperationResult<User>> CompleteUserInfo(string email, CompleteInfoRequestDto info)
         {
             await _unitOfWork.StartTransaction();
