@@ -14,17 +14,23 @@ namespace GamedevQuest.Helpers
         public void AddInjections()
         {
             _builder.Services.AddScoped<UnitOfWork>();
+
             _builder.Services.AddScoped<UserRepository>();
             _builder.Services.AddScoped<LessonRepository>();
             _builder.Services.AddScoped<TestRepository>();
+            _builder.Services.AddScoped<RefreshTokenRepository>();
+
             _builder.Services.AddScoped<UserSignupService>();
             _builder.Services.AddScoped<UserLoginService>();
             _builder.Services.AddScoped<LessonService>();
             _builder.Services.AddScoped<TestService>();
-            _builder.Services.AddScoped<JwtTokenHelper>();
+            _builder.Services.AddScoped<RefreshTokenService>();
+            _builder.Services.AddScoped<UserService>();
+
+            _builder.Services.AddScoped<TokenHelper>();
             _builder.Services.AddScoped<AuthorizationHelper>();
             _builder.Services.AddScoped<PasswordHelper>();
-            _builder.Services.AddScoped<UserService>();
+
         }
     }
 }

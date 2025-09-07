@@ -160,7 +160,7 @@ namespace GamedevQuestTests.Signup
             var userRepository = new UserRepository(context);
             var passwordHelper = new PasswordHelper();
             var userSignupService = new UserSignupService(userRepository, unitOfWork, passwordHelper);
-            JwtTokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
+            TokenHelper jwtTokenHelper = Utility.GetJwtTokenHelper();
             return new SignupController(jwtTokenHelper, userSignupService);
         }
     }

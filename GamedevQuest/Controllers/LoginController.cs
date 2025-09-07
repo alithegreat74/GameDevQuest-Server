@@ -27,7 +27,13 @@ namespace GamedevQuest.Controllers
             OperationResult<User> result = await _userLoginService.ValidateUserLogin(request);
             if (result.Result == null)
                 return result.ActionResultObject;
-            _authorizationHelper.SavePlayerSession(result.Result.Email, Response);
+            if (HttpContext.Connection.RemoteIpAddress == null)
+                return UnprocessableEntity("User ip is null");
+            string ipAddress = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            OperationResult<bool> savePlayerSessionResult = 
+                await _authorizationHelper.SaveUserSession(result.Result.Id, result.Result.Email, ipAddress, Response);
+            if (savePlayerSessionResult.Result == false)
+                return savePlayerSessionResult.ActionResultObject;
             return Ok(new LoginResponseDto(result.Result));
         }
     }

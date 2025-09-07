@@ -38,9 +38,9 @@ builder.Services.AddAuthentication("Bearer")
         options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
         {
             OnMessageReceived = context => {
-                if (context.Request.Cookies.ContainsKey(AuthorizationHelper.AuthorizationKey))
+                if (context.Request.Cookies.ContainsKey(AuthorizationHelper.JwtAuthorizationKey))
                 {
-                    context.Token = context.Request.Cookies[AuthorizationHelper.AuthorizationKey];
+                    context.Token = context.Request.Cookies[AuthorizationHelper.JwtAuthorizationKey];
                 }
                 return Task.CompletedTask;
             }

@@ -13,13 +13,11 @@ namespace GamedevQuest.Models.DTO
     public class SignupResponseDto
     {
         public int Id { get; private set; }
-        public string Token { get; private set; }
         public string Email { get; private set; }
-        public SignupResponseDto(User user, string token)
+        public SignupResponseDto(User user)
         {
             Id = user.Id;
             Email = user.Email;
-            Token = token;
         }
     }
 }
