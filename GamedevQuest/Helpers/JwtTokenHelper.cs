@@ -7,11 +7,11 @@ namespace GamedevQuest.Helpers
 {
     public class JwtTokenHelper
     {
-        private IConfiguration _config;
+        public IConfiguration Config { get; private set; }
 
         public JwtTokenHelper(IConfiguration config)
         {
-            _config = config;
+            Config = config;
         }
         public string GenerateToken(string email)
         {
@@ -19,16 +19,15 @@ namespace GamedevQuest.Helpers
             {
                 new Claim(ClaimTypes.Name, email)
             };
-            Console.Write(_config["jwt:Key"]);
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config["jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken
             (
-                issuer: _config["jwt:Issuer"],
-                audience: _config["jwt:Audience"],
+                issuer: Config["jwt:Issuer"],
+                audience: Config["jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(double.Parse(_config["jwt:ExpireMinutes"])),
+                expires: DateTime.Now.AddMinutes(double.Parse(Config["jwt:ExpireMinutes"])),
                 signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);

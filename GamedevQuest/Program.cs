@@ -1,6 +1,7 @@
 ﻿using GamedevQuest.Context;
 using GamedevQuest.Helpers;
 using GamedevQuest.Helpers.DatabaseHelpers;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -34,7 +35,18 @@ builder.Services.AddAuthentication("Bearer")
             ValidAudience = jwtConfig["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig["Key"]))
         };
+        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        {
+            OnMessageReceived = context => {
+                if (context.Request.Cookies.ContainsKey(AuthorizationHelper.AuthorizationKey))
+                {
+                    context.Token = context.Request.Cookies[AuthorizationHelper.AuthorizationKey];
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
+
 
 builder.Services.AddAuthorization();
 
