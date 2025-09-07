@@ -9,7 +9,7 @@
         public int Xp { get; private set; }
         public List<int> RelatedTests { get; private set; }
         public string LessonImageUrl { get; private set; }
-        public Lesson(int id, string lessonTitle, string lessonDescription, int minimumRequiredLevel, int xp, List<int> relatedTests, string lessonImageUrl, List<string> tags)
+        public Lesson(int id, string lessonTitle, string lessonDescription, int minimumRequiredLevel, int xp, List<int> relatedTests, string lessonImageUrl)
         {
             Id = id;
             LessonTitle = lessonTitle;

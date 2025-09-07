@@ -3,6 +3,7 @@ using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Services;
 using Microsoft.AspNetCore.Mvc;
+using static GamedevQuest.Helpers.AuthorizationHelper;
 
 namespace GamedevQuest.Controllers
 {
@@ -10,11 +11,11 @@ namespace GamedevQuest.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly JwtTokenHelper _jwtTokenGenerator;
+        private readonly AuthorizationHelper _authorizationHelper;
         private readonly UserLoginService _userLoginService;
-        public LoginController(JwtTokenHelper jwtTokenGenerator, UserLoginService userLoginService)
+        public LoginController(AuthorizationHelper authorizationHelper, UserLoginService userLoginService)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
+            _authorizationHelper = authorizationHelper;
             _userLoginService = userLoginService;
         }
 
@@ -26,8 +27,8 @@ namespace GamedevQuest.Controllers
             OperationResult<User> result = await _userLoginService.ValidateUserLogin(request);
             if (result.Result == null)
                 return result.ActionResultObject;
-            string token = _jwtTokenGenerator.GenerateToken(result.Result.Email);
-            return Ok(new LoginResponseDto(result.Result, token));
+            _authorizationHelper.SavePlayerSession(result.Result.Email, Response);
+            return Ok(new LoginResponseDto(result.Result));
         }
     }
 }
