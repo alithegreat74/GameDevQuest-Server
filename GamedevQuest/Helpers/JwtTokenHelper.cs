@@ -19,7 +19,6 @@ namespace GamedevQuest.Helpers
             {
                 new Claim(ClaimTypes.Name, email)
             };
-            Console.Write(Config["jwt:Key"]);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config["jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

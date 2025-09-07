@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.BearerToken;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace GamedevQuest.Helpers
 {
@@ -19,7 +19,7 @@ namespace GamedevQuest.Helpers
                 Secure = true,
                 HttpOnly = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddMinutes(double.Parse(_jwtTokenHelper.Config["jwt:ExpireMinutes"]))
+                Expires = DateTime.UtcNow.AddMinutes(double.TryParse(_jwtTokenHelper.Config["jwt:ExpireMinutes"], out double minutes)?minutes:0)
             };
             response.Cookies.Append(AuthorizationKey, token, cookieOption);
         }
