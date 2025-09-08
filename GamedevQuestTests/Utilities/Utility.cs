@@ -16,7 +16,7 @@ namespace GamedevQuestTests.Utilities
                 .Options;
             return new GameDevQuestDbContext(options);
         }
-        public static JwtTokenHelper GetJwtTokenHelper()
+        public static TokenHelper GetJwtTokenHelper()
         {
             var inMemorySettings = new Dictionary<string, string>
             {
@@ -28,7 +28,7 @@ namespace GamedevQuestTests.Utilities
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
-            return new JwtTokenHelper(configuration);
+            return new TokenHelper(configuration);
         }
     }
 }

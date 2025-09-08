@@ -1,19 +1,21 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using GamedevQuest.Models;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace GamedevQuest.Helpers
 {
-    public class JwtTokenHelper
+    public class TokenHelper
     {
         public IConfiguration Config { get; private set; }
 
-        public JwtTokenHelper(IConfiguration config)
+        public TokenHelper(IConfiguration config)
         {
             Config = config;
         }
-        public string GenerateToken(string email)
+        public string GenerateJwtToken(string email)
         {
             var claims = new Claim[]
             {
@@ -31,6 +33,13 @@ namespace GamedevQuest.Helpers
                 signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public RefreshToken GenerateRefreshToken(int userId, string ipAddress)
+        {
+            byte[] randomNumber = RandomNumberGenerator.GetBytes(64);
+            string token = Convert.ToBase64String(randomNumber);
+            double expireTime = double.TryParse(Config["RefreshToken:ExpiresMinutes"], out double minutes) ? minutes : 0;
+            return new RefreshToken(userId, token, ipAddress, DateTime.UtcNow, DateTime.UtcNow.AddMinutes(expireTime));
         }
     }
 }
