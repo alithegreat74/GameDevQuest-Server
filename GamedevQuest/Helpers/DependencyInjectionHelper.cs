@@ -28,7 +28,7 @@ namespace GamedevQuest.Helpers
             _builder.Services.AddScoped<UserService>();
 
             _builder.Services.AddScoped<TokenHelper>();
-            _builder.Services.AddScoped<AuthorizationHelper>();
+            _builder.Services.AddScoped<AuthorizationService>();
             _builder.Services.AddScoped<PasswordHelper>();
 
         }

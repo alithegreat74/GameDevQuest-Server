@@ -23,7 +23,7 @@ namespace GamedevQuest.Repositories
         }
         public async Task<RefreshToken?> FindRefreshTokenNoTracking(string token)
         {
-            return await _refreshTokens.AsNoTracking().FirstOrDefaultAsync(refreshToken => refreshToken.Token == token);
+            return await _refreshTokens.AsNoTracking().FirstOrDefaultAsync(refreshToken => refreshToken.Token == token && refreshToken.ExpiresAt > DateTime.UtcNow);
         }
     }
 }

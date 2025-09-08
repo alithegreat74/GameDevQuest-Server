@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GamedevQuest.Helpers
 {
-    public class AuthorizationHelper
+    public class AuthorizationService
     {
         private readonly TokenHelper _jwtTokenHelper;
         private readonly RefreshTokenService _refreshTokenService;
         public static readonly string JwtAuthorizationKey = "jwt_token";
         public static readonly string RefreshAuthorizationKey = "refresh_token";
-        public AuthorizationHelper(TokenHelper jwtTokenHelper, RefreshTokenService refreshTokenService)
+        public AuthorizationService(TokenHelper jwtTokenHelper, RefreshTokenService refreshTokenService)
         {
             _jwtTokenHelper = jwtTokenHelper;
             _refreshTokenService = refreshTokenService;

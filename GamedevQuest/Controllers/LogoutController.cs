@@ -11,12 +11,14 @@ namespace GamedevQuest.Controllers
     [Route("api/[controller]")]
     public class LogoutController : ControllerBase
     {
-        private readonly AuthorizationHelper _authorizationHelper;
+        private readonly AuthorizationService _authorizationHelper;
         private readonly UserService _userService;
-        public LogoutController(AuthorizationHelper authorizationHelper, UserService userService)
+        private readonly IpAddressHelper _ipAddressHelper;
+        public LogoutController(AuthorizationService authorizationHelper, UserService userService)
         {
             _authorizationHelper = authorizationHelper;
             _userService = userService;
+            _ipAddressHelper = new IpAddressHelper();
         }
         [HttpGet]
         [Authorize]
@@ -28,10 +30,10 @@ namespace GamedevQuest.Controllers
             OperationResult<User?> findUser = await _userService.GetUserByEmail(email);
             if (findUser.Result == null)
                 return findUser.ActionResultObject;
-            if (HttpContext.Connection.RemoteIpAddress == null)
-                return UnprocessableEntity("User ip is null");
-            string ipAddress = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
-            OperationResult<bool> removePlayerSession= await _authorizationHelper.RemoveUserSession(findUser.Result.Id, ipAddress, Response);
+            OperationResult<string> findIpAddress = _ipAddressHelper.GetIpAddress(HttpContext, Request);
+            if (findIpAddress.Result == null)
+                return findIpAddress.ActionResultObject;
+            OperationResult<bool> removePlayerSession= await _authorizationHelper.RemoveUserSession(findUser.Result.Id, findIpAddress.Result, Response);
             if (removePlayerSession.Result == null)
                 return removePlayerSession.ActionResultObject;
             return Ok();

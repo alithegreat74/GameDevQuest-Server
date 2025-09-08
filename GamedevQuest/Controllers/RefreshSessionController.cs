@@ -10,9 +10,9 @@ namespace GamedevQuest.Controllers
     [Route("api/[controller]")]
     public class RefreshSessionController : ControllerBase
     {
-        private readonly AuthorizationHelper _authorizationHelper;
+        private readonly AuthorizationService _authorizationHelper;
         private readonly UserService _userService;
-        public RefreshSessionController(AuthorizationHelper authorizationHelper, UserService userService)
+        public RefreshSessionController(AuthorizationService authorizationHelper, UserService userService)
         {
             _authorizationHelper = authorizationHelper;
             _userService = userService;

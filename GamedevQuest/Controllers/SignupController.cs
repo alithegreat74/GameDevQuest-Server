@@ -11,11 +11,13 @@ namespace GamedevQuest.Controllers
     public class SignupController : ControllerBase
     {
         private readonly UserSignupService _userSignupService;
-        private readonly AuthorizationHelper _authorizationHelper;
-        public SignupController(AuthorizationHelper authorizationHelper, UserSignupService userServiceService)
+        private readonly AuthorizationService _authorizationHelper;
+        private readonly IpAddressHelper _ipAddressHelper;
+        public SignupController(AuthorizationService authorizationHelper, UserSignupService userServiceService)
         {
             _authorizationHelper = authorizationHelper;
             _userSignupService = userServiceService;
+            _ipAddressHelper = new IpAddressHelper();
         }
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] SignupRequestDto request)
@@ -26,11 +28,11 @@ namespace GamedevQuest.Controllers
             if(!result.Result)
                 return result.ActionResultObject;
             User newUser = await _userSignupService.CreateUser(request);
-            if (HttpContext.Connection.RemoteIpAddress == null)
-                return UnprocessableEntity("User ip is null");
-            string ipAddress = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            OperationResult<string> findIpAddress = _ipAddressHelper.GetIpAddress(HttpContext, Request);
+            if (findIpAddress.Result == null)
+                return findIpAddress.ActionResultObject;
             OperationResult<bool> savePlayerSession = 
-                await _authorizationHelper.SaveUserSession(newUser.Id, newUser.Email, ipAddress, Response);
+                await _authorizationHelper.SaveUserSession(newUser.Id, newUser.Email, findIpAddress.Result, Response);
             return Ok(new SignupResponseDto(newUser));
         }
     }

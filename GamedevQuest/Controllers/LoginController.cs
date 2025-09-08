@@ -3,7 +3,7 @@ using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Services;
 using Microsoft.AspNetCore.Mvc;
-using static GamedevQuest.Helpers.AuthorizationHelper;
+using static GamedevQuest.Services.AuthorizationService;
 
 namespace GamedevQuest.Controllers
 {
@@ -11,12 +11,14 @@ namespace GamedevQuest.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly AuthorizationHelper _authorizationHelper;
+        private readonly AuthorizationService _authorizationHelper;
         private readonly UserLoginService _userLoginService;
-        public LoginController(AuthorizationHelper authorizationHelper, UserLoginService userLoginService)
+        private readonly IpAddressHelper _ipAddressHelper;
+        public LoginController(AuthorizationService authorizationHelper, UserLoginService userLoginService)
         {
             _authorizationHelper = authorizationHelper;
             _userLoginService = userLoginService;
+            _ipAddressHelper = new IpAddressHelper();
         }
 
         [HttpPost]
@@ -27,11 +29,11 @@ namespace GamedevQuest.Controllers
             OperationResult<User> result = await _userLoginService.ValidateUserLogin(request);
             if (result.Result == null)
                 return result.ActionResultObject;
-            if (HttpContext.Connection.RemoteIpAddress == null)
-                return UnprocessableEntity("User ip is null");
-            string ipAddress = HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            OperationResult<string> findIpAddress = _ipAddressHelper.GetIpAddress(HttpContext, Request);
+            if (findIpAddress.Result == null)
+                return findIpAddress.ActionResultObject;
             OperationResult<bool> savePlayerSessionResult = 
-                await _authorizationHelper.SaveUserSession(result.Result.Id, result.Result.Email, ipAddress, Response);
+                await _authorizationHelper.SaveUserSession(result.Result.Id, result.Result.Email, findIpAddress.Result, Response);
             if (savePlayerSessionResult.Result == false)
                 return savePlayerSessionResult.ActionResultObject;
             return Ok(new LoginResponseDto(result.Result));
