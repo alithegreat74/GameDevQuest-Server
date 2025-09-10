@@ -4,10 +4,12 @@
     {
         public int Xp {  get; set; }
         public int LevelUpXp {  get; set; }
+        public int Level { get; set; }
         public XpDto(User user)
         {
             Xp = user.Xp;
             LevelUpXp = user.LevelXp;
+            Level = user.Level;
         }
     }
 }
