@@ -3,7 +3,6 @@ using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Services;
 using Microsoft.AspNetCore.Mvc;
-using static GamedevQuest.Services.AuthorizationService;
 
 namespace GamedevQuest.Controllers
 {

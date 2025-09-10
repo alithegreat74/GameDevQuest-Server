@@ -26,7 +26,7 @@ namespace GamedevQuest.Helpers
             {
                 Secure = true,
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = refreshToken.Result.ExpiresAt
             };
             response.Cookies.Append(RefreshAuthorizationKey, refreshToken.Result.Token, RefreshTokenCookieOption);
@@ -60,7 +60,7 @@ namespace GamedevQuest.Helpers
             {
                 Secure = true,
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddMinutes(double.TryParse(_jwtTokenHelper.Config["jwt:ExpireMinutes"], out double minutes) ? minutes : 0)
             };
             response.Cookies.Append(JwtAuthorizationKey, jwtToken, jwtCookieOption);
