@@ -3,6 +3,7 @@ using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 using System.Security.Claims;
 
 namespace GamedevQuest.Services
@@ -69,13 +70,10 @@ namespace GamedevQuest.Services
             try
             {
                 await _unitOfWork.StartTransaction();
-                foreach (TestSolveAttempt attempt in attempts)
-                {
-                    if (user.SolvedTests.Contains(attempt.TestId))
-                        continue;
-
-                    user.SolvedTests.Add(attempt.TestId);
-                }
+                user.SolvedTests ??= new List<int>();
+                HashSet<int> existingTests = user.SolvedTests.ToHashSet();
+                IEnumerable<int> newIds = attempts.Select(attempts => attempts.Id).Where(attempts => !existingTests.Contains(attempts)).Distinct();
+                user.SolvedTests.AddRange(newIds);
                 await _unitOfWork.CommitChanges();
                 return new OperationResult<bool>(true);
             }
