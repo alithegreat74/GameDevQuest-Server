@@ -23,10 +23,7 @@ namespace GamedevQuest.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            string? email = User.FindFirst(ClaimTypes.Name)?.Value;
-            if (string.IsNullOrEmpty(email))
-                return NotFound("There was a problem in retrieving the user data");
-            OperationResult<User> findUserResult = await _userService.GetUserByEmail(email);
+            OperationResult<User> findUserResult = await _userService.GetUserFromCookie(User);
             if (findUserResult.Result == null)
                 return findUserResult.ActionResultObject;
             List<LessonResponseDto> responses = _lessonService.GetAllLessons(findUserResult.Result);

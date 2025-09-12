@@ -12,5 +12,6 @@ namespace GamedevQuest.Context
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<TestSolveAttempt> TestSolveAttempts { get; set; }
     }
 }

@@ -23,11 +23,8 @@ namespace GamedevQuest.Controllers
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAsync()
-        {
-            string? email = User.FindFirst(ClaimTypes.Name)?.Value;
-            if (string.IsNullOrEmpty(email))
-                return NotFound("There was a problem in retrieving the user data");
-            OperationResult<User?> findUser = await _userService.GetUserByEmail(email);
+        { 
+            OperationResult<User?> findUser = await _userService.GetUserFromCookie(User);
             if (findUser.Result == null)
                 return findUser.ActionResultObject;
             OperationResult<string> findIpAddress = _ipAddressHelper.GetIpAddress(HttpContext, Request);

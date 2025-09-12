@@ -22,10 +22,7 @@ namespace GamedevQuest.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
-            string? email = User.FindFirst(ClaimTypes.Name)?.Value;
-            if (email == null)
-                return NotFound("Could not find the user's email");
-            OperationResult<User> findUser = await _userService.GetUserByEmail(email);
+            OperationResult<User> findUser = await _userService.GetUserFromCookie(User);
             if (findUser.Result == null)
                 return findUser.ActionResultObject;
             return Ok(new XpDto(findUser.Result));

@@ -30,5 +30,9 @@ namespace GamedevQuest.Services
 
             return lessons.Select(lesson => new LessonResponseDto(lesson, user)).ToList();
         }
+        public int CalculateUserXpGain(Lesson lesson, int correctTestNumber)
+        {
+            return (lesson.Xp * correctTestNumber) / lesson.RelatedTests.Count;
+        }
     }
 }

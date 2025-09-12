@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using static GamedevQuest.Models.Test;
-using System.Text.Json.Serialization;
 
 namespace GamedevQuest.Models.DTO
 {
@@ -20,15 +19,10 @@ namespace GamedevQuest.Models.DTO
             this.Answer = answer;
         }
     }
-    public class TestResponseDto
+    public class CheckTestAnswerDto
     {
-        public int Xp { get; private set; }
-        public int LevelUpXp { get; private set; }
-        public TestResponseDto(User user)
-        {
-            Xp = user.Xp;
-            LevelUpXp = user.LevelXp;
-        }
+        public int TestId { get; set; }
+        public string? Answer { get; set; }
     }
     public class TestSummaryDto
     {
