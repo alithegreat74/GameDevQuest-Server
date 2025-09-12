@@ -3,6 +3,8 @@ using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
+using System.Security.Claims;
 
 namespace GamedevQuest.Services
 {
@@ -31,14 +33,11 @@ namespace GamedevQuest.Services
 
             return new OperationResult<User>(user);
         }
-        public async Task<OperationResult<User>> CompleteUserInfo(string email, CompleteInfoRequestDto info)
+        public async Task<OperationResult<User>> CompleteUserInfo(User user, CompleteInfoRequestDto info)
         {
             await _unitOfWork.StartTransaction();
             try
             {
-                User? user = await _userRepository.FindUserByEmail(email);
-                if (user == null)
-                    return new OperationResult<User>(new NotFoundObjectResult($"Couldn't find user with email: {email}"));
                 User? userWithSameUsername = await _userRepository.FindUserByUsernameNoTracking(info.Username);
                 if (userWithSameUsername != null && user.Id != userWithSameUsername.Id)
                     return new OperationResult<User>(new ConflictObjectResult($"A user with the same username exists"));
@@ -52,31 +51,40 @@ namespace GamedevQuest.Services
                 return new OperationResult<User>(new UnprocessableEntityObjectResult(ex.Message));
             }
         }
-        public async Task<OperationResult<User>> AddUserXp(string email, int xp, int lessonId)
+        public async Task<OperationResult<User>> GetUserFromCookie(ClaimsPrincipal user)
+        {
+            string? email = user.FindFirst(ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(email))
+                return new OperationResult<User>(new NotFoundObjectResult("There was a problem in retrieving the user data"));
+            return await GetUserByEmail(email);
+        }
+        public async Task<OperationResult<User>> AddUserXp(User user, int xp)
         {
             await _unitOfWork.StartTransaction();
-            User? user = await _userRepository.FindUserByEmail(email);
-            if (user == null)
-            {
-                await _unitOfWork.RollBackChanges();
-                return new OperationResult<User>(new NotFoundObjectResult($"Could not find user with email: {email}"));
-            } 
-            if(!TryAddSolvedLesson(user, lessonId))
-            {
-                await _unitOfWork.RollBackChanges();
-                return new OperationResult<User>(new ConflictObjectResult($"The user has already done this lesson"));
-            }
             user.UpdateXp(xp);
             await _unitOfWork.CommitChanges();
             return new OperationResult<User>(user);
         }
-        private bool TryAddSolvedLesson(User user, int lessonId)
+        public async Task<OperationResult<bool>> AddSolvedTests(User user, IEnumerable<TestSolveAttempt> attempts)
         {
-            user.SolvedLessons ??= new List<int>();
-            if (user.SolvedLessons.Contains(lessonId))
-                return false;
-            user.SolvedLessons.Add(lessonId);
-            return true;
+            try
+            {
+                await _unitOfWork.StartTransaction();
+                user.SolvedTests ??= new List<int>();
+                HashSet<int> existingTests = user.SolvedTests.ToHashSet();
+                IEnumerable<int> newIds = attempts
+                    .Select(attempts => attempts.TestId)
+                    .Where(attempts => !existingTests.Contains(attempts))
+                    .Distinct();
+                user.SolvedTests.AddRange(newIds);
+                await _unitOfWork.CommitChanges();
+                return new OperationResult<bool>(true);
+            }
+            catch
+            {
+                await _unitOfWork.RollBackChanges();
+                return new OperationResult<bool>(false);
+            }
         }
     }
 }

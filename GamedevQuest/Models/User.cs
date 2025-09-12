@@ -14,7 +14,7 @@ namespace GamedevQuest.Models
         public int Level { get; private set; }
         public int Xp { get; private set; }
         public int LevelXp => XpSystem.GetLevelXp(Level);
-        public List<int>? SolvedLessons { get; set; }
+        public List<int>? SolvedTests { get; set; }
         public User(string? email, string? firstName, string? lastName, string? username, string? password)
         {
             Email = email;
@@ -24,7 +24,7 @@ namespace GamedevQuest.Models
             Password = password;
             Level = 1;
             Xp = 0;
-            SolvedLessons = new List<int>();
+            SolvedTests = new List<int>();
         }
 
         public void UpdateXp(int xp)

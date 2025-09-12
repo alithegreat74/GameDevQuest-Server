@@ -17,7 +17,7 @@
             Xp = lesson.Xp;
             ShortDescription = lesson.LessonDescription.Length > 30 ? lesson.LessonDescription.Substring(0, 30) : lesson.LessonDescription;
             LessonImageUrl = lesson.LessonImageUrl;
-            int doneLessons = user.SolvedLessons != null ? lesson.RelatedTests.Intersect(user.SolvedLessons).Count() : 0;
+            int doneLessons = user.SolvedTests != null ? lesson.RelatedTests.Intersect(user.SolvedTests).Count() : 0;
             UserStars = lesson.RelatedTests.Count > 0 ? (doneLessons * 3) / lesson.RelatedTests.Count() : 0;
         }
     }

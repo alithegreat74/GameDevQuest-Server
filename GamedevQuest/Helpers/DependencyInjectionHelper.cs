@@ -19,6 +19,7 @@ namespace GamedevQuest.Helpers
             _builder.Services.AddScoped<LessonRepository>();
             _builder.Services.AddScoped<TestRepository>();
             _builder.Services.AddScoped<RefreshTokenRepository>();
+            _builder.Services.AddScoped<TestSolveAttemptRepository>();
 
             _builder.Services.AddScoped<UserSignupService>();
             _builder.Services.AddScoped<UserLoginService>();
@@ -26,6 +27,7 @@ namespace GamedevQuest.Helpers
             _builder.Services.AddScoped<TestService>();
             _builder.Services.AddScoped<RefreshTokenService>();
             _builder.Services.AddScoped<UserService>();
+            _builder.Services.AddScoped<TestSolveAttemptService>();
 
             _builder.Services.AddScoped<TokenHelper>();
             _builder.Services.AddScoped<AuthorizationService>();

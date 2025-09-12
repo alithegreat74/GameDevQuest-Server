@@ -3,6 +3,7 @@ using GamedevQuest.Models.DTO;
 using GamedevQuest.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
+using static GamedevQuest.Models.DTO.TestSubmissionDto;
 
 namespace GamedevQuest.Services
 {
@@ -37,6 +38,28 @@ namespace GamedevQuest.Services
             }
 
             return new OperationResult<List<TestSummaryDto>>(summaries);
+        }
+        public async Task<bool> CheckTestAnswer(int id, string answer)
+        {
+            OperationResult<Test> findTest = await GetTest(id);
+            return findTest.Result!=null && findTest.Result.Answer.Equals(answer);
+        }
+        public async Task<List<int>> FilterTestSubmissions(List<TestSubmission> submissions, User user, Lesson lesson)
+        {
+            var filteredTests = new List<int>();
+
+            foreach (var submission in submissions)
+            {
+                bool alreadySolved = user.SolvedTests.Contains(submission.TestId);
+                bool related = lesson.RelatedTests.Contains(submission.TestId);
+                bool answerCorrect = await CheckTestAnswer(submission.TestId, submission.Answer);
+
+                if (!alreadySolved && related && answerCorrect)
+                {
+                    filteredTests.Add(submission.TestId);
+                }
+            }
+            return filteredTests;
         }
     }
 }

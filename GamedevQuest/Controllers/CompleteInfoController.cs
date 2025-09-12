@@ -9,7 +9,7 @@ namespace GamedevQuest.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    
     public class CompleteInfoController : ControllerBase
     {
         private UserService _userService;
@@ -17,15 +17,16 @@ namespace GamedevQuest.Controllers
         {
             _userService = userService;
         }
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] CompleteInfoRequestDto body)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            string? email = User.FindFirst(ClaimTypes.Name)?.Value;
-            if (email == null)
-                return NotFound("Could not find the user's email");
-            OperationResult<User> result = await _userService.CompleteUserInfo(email, body);
+            OperationResult<User> findUser = await _userService.GetUserFromCookie(User);
+            if (findUser.Result == null)
+                return findUser.ActionResultObject;
+            OperationResult<User> result = await _userService.CompleteUserInfo(findUser.Result, body);
             if (result.Result == null)
                 return result.ActionResultObject;
             return Ok(new CompleteInfoResponseDto(result.Result));
