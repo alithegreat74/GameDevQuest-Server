@@ -1,6 +1,7 @@
 ﻿using GamedevQuest.Models;
 using GamedevQuest.Models.DTO;
 using GamedevQuest.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamedevQuest.Controllers
@@ -20,6 +21,7 @@ namespace GamedevQuest.Controllers
             _testService = testService;
             _testSolveAttemptService = testSolveAttemptService;
         }
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] TestSubmissionDto body)
         {

@@ -9,7 +9,7 @@ namespace GamedevQuest.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    
     public class CompleteInfoController : ControllerBase
     {
         private UserService _userService;
@@ -17,6 +17,7 @@ namespace GamedevQuest.Controllers
         {
             _userService = userService;
         }
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] CompleteInfoRequestDto body)
         {

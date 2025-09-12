@@ -72,7 +72,10 @@ namespace GamedevQuest.Services
                 await _unitOfWork.StartTransaction();
                 user.SolvedTests ??= new List<int>();
                 HashSet<int> existingTests = user.SolvedTests.ToHashSet();
-                IEnumerable<int> newIds = attempts.Select(attempts => attempts.Id).Where(attempts => !existingTests.Contains(attempts)).Distinct();
+                IEnumerable<int> newIds = attempts
+                    .Select(attempts => attempts.TestId)
+                    .Where(attempts => !existingTests.Contains(attempts))
+                    .Distinct();
                 user.SolvedTests.AddRange(newIds);
                 await _unitOfWork.CommitChanges();
                 return new OperationResult<bool>(true);

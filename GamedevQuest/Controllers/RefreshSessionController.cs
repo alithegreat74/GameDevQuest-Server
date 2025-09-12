@@ -1,6 +1,7 @@
 ﻿using GamedevQuest.Helpers;
 using GamedevQuest.Models;
 using GamedevQuest.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -17,6 +18,7 @@ namespace GamedevQuest.Controllers
             _authorizationHelper = authorizationHelper;
             _userService = userService;
         }
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAsync()
         {
