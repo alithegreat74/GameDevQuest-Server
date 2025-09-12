@@ -27,14 +27,12 @@
         public string Title { get; private set; }
         public string Description { get; private set; }
         public int MinimumRequiredLevel { get; private set; }
-        public List<TestSummaryDto> Tests { get; private set; }
-        public LessonDetailResponseDto(Lesson lesson,  List<TestSummaryDto> tests)
+        public LessonDetailResponseDto(Lesson lesson)
         {
             Id = lesson.Id;
             Title = lesson.LessonTitle;
             Description = lesson.LessonDescription;
             MinimumRequiredLevel = lesson.MinimumRequiredLevel;
-            Tests = tests;
         }
     }
 }
