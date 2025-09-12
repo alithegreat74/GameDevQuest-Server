@@ -10,10 +10,10 @@ namespace GamedevQuest.Controllers
     [Route("api/test/[Controller]")]
     public class CheckTestAnswerController : ControllerBase
     {
-        private TestService _testService;
-        private LessonService _lessonService;
-        private TestSolveAttemptService _testSolveAttemptService;
-        private UserService _userService;
+        private readonly TestService _testService;
+        private readonly LessonService _lessonService;
+        private readonly TestSolveAttemptService _testSolveAttemptService;
+        private readonly UserService _userService;
         public CheckTestAnswerController(TestService testService, LessonService lessonService, TestSolveAttemptService testSolveAttemptService, UserService userService)
         {
             _testService = testService;
@@ -35,7 +35,7 @@ namespace GamedevQuest.Controllers
                 return findLesson.ActionResultObject;
             if (!findLesson.Result.RelatedTests.Contains(body.TestId))
                 return BadRequest($"Test {body.TestId} does not belong to lesson {body.LessonId}");
-            if (!string.Equals(body.Answer.Trim(), findTest.Result.Answer.Trim(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(body.Answer?.Trim(), findTest.Result.Answer?.Trim(), StringComparison.OrdinalIgnoreCase))
                 return BadRequest(new CheckTestAnswerDto() { TestId = body.TestId, Answer = findTest.Result.Answer });
             OperationResult<User>findUser = await _userService.GetUserFromCookie(User);
             if (findUser.Result == null)

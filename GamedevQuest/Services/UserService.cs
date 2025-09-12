@@ -64,13 +64,26 @@ namespace GamedevQuest.Services
             await _unitOfWork.CommitChanges();
             return new OperationResult<User>(user);
         }
-        private bool TryAddSolvedLesson(User user, int testId)
+        public async Task<OperationResult<bool>> AddSolvedTests(User user, IEnumerable<TestSolveAttempt> attempts)
         {
-            user.SolvedTests ??= new List<int>();
-            if (user.SolvedTests.Contains(testId))
-                return false;
-            user.SolvedTests.Add(testId);
-            return true;
+            try
+            {
+                await _unitOfWork.StartTransaction();
+                foreach (TestSolveAttempt attempt in attempts)
+                {
+                    if (user.SolvedTests.Contains(attempt.TestId))
+                        continue;
+
+                    user.SolvedTests.Add(attempt.TestId);
+                }
+                await _unitOfWork.CommitChanges();
+                return new OperationResult<bool>(true);
+            }
+            catch
+            {
+                await _unitOfWork.RollBackChanges();
+                return new OperationResult<bool>(false);
+            }
         }
     }
 }

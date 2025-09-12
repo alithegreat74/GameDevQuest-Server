@@ -13,11 +13,11 @@ namespace GamedevQuest.Services
             _repository = repository;
             _unitOfWork = unitOfWork;
         }
-        public int SubmitUserTests(User user, IEnumerable<int> tests)
+        public List<TestSolveAttempt> SubmitUserTests(User user, IEnumerable<int> tests)
         {
             IEnumerable<TestSolveAttempt> testSolveAttempts = _repository.GetTestSolveAttemptsByUserIdNoTracking(user.Id, DateTime.UtcNow.AddMinutes(-10));
             List<TestSolveAttempt> filteredAttempts = testSolveAttempts.Where(attempt => tests.Contains(attempt.TestId)).ToList();
-            return filteredAttempts.Count;
+            return filteredAttempts;
         }
         public async Task AddTestSolveAttempt(int userId, int testId)
         {

@@ -20,6 +20,7 @@ namespace GamedevQuest.Controllers
             _testService = testService;
             _testSolveAttemptService = testSolveAttemptService;
         }
+        [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] TestSubmissionDto body)
         {
             if (!ModelState.IsValid)
@@ -31,8 +32,9 @@ namespace GamedevQuest.Controllers
             if (findLesson.Result == null)
                 return findLesson.ActionResultObject;
             List<int> filteredTests = await _testService.FilterTestSubmissions(body.Submissions, findUser.Result, findLesson.Result);
-            int filterBasedOnAttempts = _testSolveAttemptService.SubmitUserTests(findUser.Result, filteredTests);
-            await _userService.AddUserXp(findUser.Result, _lessonService.CalculateUserXpGain(findLesson.Result, filterBasedOnAttempts));
+            List<TestSolveAttempt> attempts = _testSolveAttemptService.SubmitUserTests(findUser.Result, filteredTests);
+            await _userService.AddUserXp(findUser.Result, _lessonService.CalculateUserXpGain(findLesson.Result, attempts.Count));
+            await _userService.AddSolvedTests(findUser.Result, attempts);
             return Ok(new TestSubmissionResponseDto(findUser.Result));
         }
     }
